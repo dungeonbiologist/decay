@@ -17,7 +17,7 @@ function initPlayer(){
 			return Math.floor(Math.pow(this.xp,1/3));
 		},
 		mana:function(range){
-			var r = Math.ceil(range/2);
+			var r = range;
 			var m = map[player.place.z].magic;
 			var x = player.place.x;
 			var y = player.place.y;
@@ -231,6 +231,8 @@ function setInstructions(){
 		'',
 		'd drains the life out of surrounding vegetation',
 		'',
+		'b blights the vegetation',
+		'',
 		'spacebar waits a turn',
 		'',
 		'i brings up your inventory',
@@ -293,6 +295,8 @@ function handleKeys(evt) {
 			move();
 		} else if( find(keys,32)){
 			tick();
+		} else if( find(keys,66)){ //b
+			blight.activate(player.place.x, player.place.y, player.place.z);
 		}
 	}
 	else if (player.state == 'messagelog'){

@@ -70,14 +70,10 @@ function Direction(x,y){
 		return new Direction(this.x+dir.x, this.y + dir.y);
 	};
 }
-function Point(x, y, z, level) {
+function Point(x, y, z) {
 	this.x = x;
 	this.y = y;
 	this.z = z;
-	if(level){
-		alert('level unnessicerilly provided');
-		var w=2;
-	}
 }
 Point.prototype = {
 	diff: function(p){

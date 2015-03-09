@@ -34,10 +34,10 @@ function placeMagic(x,y,diameter,level,peak){
 	var max = diameter - Math.floor(diameter/2);
 	for(var i=x + min; i<x+ max; i++){
 		for(var j=y + min; j<y+ max; j++){
-			if(level.legal(i,j)){
+			if(level.legal(i,j) && level.terrain[i][j].walkable){
 				var d = 1-2*Math.sqrt( (i-x)*(i-x) + (j-y)*(j-y) )/diameter;
 				var m = Math.floor( Math.random()+ peak*d );
-				level.magic[i][j] = Math.max(0, Math.min( peak, m));
+				level.magic[i][j] = Math.max( level.magic[i][j], Math.min( 4, m));
 			}
 		}
 	}

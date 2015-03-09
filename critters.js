@@ -11,6 +11,36 @@ function initCritters(){
 			drop: item.unicornHorn,
 			tiles: [tile(white,black,151)],
 			explain: 'The vicious unicorn is a merciless beast.  They gain powers by sacrificing innocent vigin wizards to their vile deities.'
+		},
+		dryad: {
+			name:intern('dryad'),
+			maxHealth: 10,
+			speed: 1,
+			damage:10,
+			speed: 1,
+			xp:400,
+			tiles: [tile(darkYellow,black,100)],
+			explain: 'Dryads plant saplings that protect the surrounding vegetation from your mana drain. Kill the dryad to remove the sapling.'
+		},
+		pixie: {
+			name:intern('pixie'),
+			maxHealth: 10,
+			speed: 1,
+			damage:10,
+			speed: 1,
+			xp:400,
+			tiles: [tile(cyan,black,112)],
+			explain: 'Dryads plant saplings that protect the surrounding vegetation from your mana drain. Kill the dryad to remove the sapling.'
+		},
+		fairy: {
+			name:intern('fairy'),
+			maxHealth: 10,
+			speed: 1,
+			damage:10,
+			speed: 1,
+			xp:400,
+			tiles: [tile(yellow,black,102)],
+			explain: 'Dryads plant saplings that protect the surrounding vegetation from your mana drain. Kill the dryad to remove the sapling.'
 		}
 	};
 	var animalPrototype = {
@@ -30,11 +60,7 @@ function initCritters(){
 				fn(this.positions[i]);
 			}
 		},
-		attacked: function(point, thing, damage, explosive) {
-			if(explosive && this.drop){
-				this.drop = undefined;
-				message('The '+interned[this.name]+' is too bloodied by the explosion to leave a trophy', red);
-			}
+		attacked: function(point, thing, damage) {
 			this.health -= damage;
 			this.enrage(thing);
 			if(thing && this.stampedes){
@@ -70,6 +96,8 @@ function initCritters(){
 					this.move(); 
 				}
 			}
+			var self=this;
+			actionlist.add(map.turnNumber+1,function(){self.tick()});
 		},
 		hunt: function(){
 			if(this.enemy && this.enemy.health >0){
@@ -87,14 +115,6 @@ function initCritters(){
 		},
 		die: function(){
 			map[this.place.z].mobiles.remove(this);
-			var self = this;
-			this.forAllPositions( function(p){
-					map[self.place.z].terrain[self.place.x +p.x][self.place.y +p.y] = terrains.guts.init();
-				}
-			)
-			if(this.drop){
-				map[this.place.z].items.add(this.drop.init(this.place.add(new Direction(0,0)))); //to get a fresh point
-			}
 			message('The '+interned[this.name]+' dies',darkYellow);
 			player.levelUp(this.xp);
 			player.fine(this.fine,this);
@@ -173,6 +193,7 @@ function initCritters(){
 			if(t.hostile){
 				t.enemy = player;
 			}
+			actionlist.add(map.turnNumber+1,function(){t.tick()});
 			return t;
 		},
 		draw: function(context){

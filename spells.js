@@ -10,6 +10,7 @@ function drain(x,y,z,amount){
 }
 
 function drainTiles(level, tiles, amount, z){
+	shuffle(tiles);
 	var neighbors = [];
 	for(var i=0; i<tiles.length;i++){
 		if(level.legal(tiles[i][0],tiles[i][1])){
@@ -34,4 +35,26 @@ function drainTiles(level, tiles, amount, z){
 		level.terrain[neighbors[i][0]][neighbors[i][1]].update( neighbors[i][0], neighbors[i][1], z);
 	}
 	return amount;
+}
+
+fingerOfDeath = {
+	name: intern('finger of death'),
+	range: 1,
+	level: 0,
+	mana: 20,
+	target:'directional',
+	activate:function(){},
+	key:[],
+	description:'damages one adjacent target of your choosing for 20 damage. It uses 20 mana.'
+}
+blight = {
+	name: intern('blight'),
+	range: 2,
+	level: 0,
+	mana: 20,
+	target:'none',
+	activate:function(x,y,z){
+		map[z].terrain[x][y]=terrains.blightedGrowth.init(x,y,z);
+	},
+	key:[]
 }

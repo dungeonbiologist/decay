@@ -34,6 +34,11 @@ function drawCritter(tile,priority) {
 		background: [black],
 		character: [0]
 	},
+	drained: {
+		foreground: [grey,darkMagenta,magenta],
+		background: [black],
+		character: [250]
+	},
 	upstairs: {
 		foreground: [grey],
 		background: [black],
@@ -54,6 +59,11 @@ function drawCritter(tile,priority) {
 		background: [white],
 		character: [46]
 	}, 
+	blighted: {
+		foreground: [magenta, darkMagenta],
+		background: [black],
+		character: [44,39,96]
+	},
 	veg1: {
 		foreground: [green, darkGreen],
 		background: [black],

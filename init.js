@@ -47,6 +47,7 @@ function acend(){
 }
 
 function tick(){
+	map.turnNumber++;
 	if(player.health<=0 ){
 		lose();
 		return;
@@ -66,10 +67,10 @@ function tick(){
 		}
 	}
 	var level = map[p.z];
+	actionlist.tick(map.turnNumber);
 	level.mobiles.forall(function (thing) {
-		thing.tick();
+		//thing.tick();
 	});
-	map.turnNumber++;
 }
 function init() {
 	if (window.Event) {

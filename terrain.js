@@ -6,7 +6,9 @@ function initTerrain(){
 		t.priority = 0;
 	}
 	t.draw = variableDraw;
-	t.update = updateTerrain; 
+	if(!t.update){
+		t.update = updateTerrain; 
+	}
 	return t;
 }
 function updateTerrain(x,y,z){}//placeholder for magic sensitive terrain
@@ -207,13 +209,15 @@ function initTerrains(){
 		name: intern('vegetation'),
 		walkable: true,
 		flyable: true,
-		priority: 0,
 		magic:0,
 		tiles: ['pebbles','veg1','veg2','veg3','veg4'],
 		update:function(x,y,z){
 			if(this.magic != map[z].magic[x][y]){
 				this.tile = randomElt(terrainTiles[this.tiles[ map[z].magic[x][y] ]]);
 				this.magic = map[z].magic[x][y];
+				if(map[z].magic[x][y] <= 0){
+					map[z].terrain[x][y] = terrains.drained.init();
+				}
 			}
 		},
 		init: function(){
@@ -223,6 +227,42 @@ function initTerrains(){
 				t.priority = 0;
 			}
 			t.draw = variableDraw;
+			return t;
+		}
+	},
+	drained: {
+		name: intern('lifeless ground'),
+		walkable: true,
+		flyable: true,
+		tiles: 'drained',
+		init: initTerrain
+	},
+	blightedGrowth: {
+		name: intern('blighted growth'),
+		walkable: true,
+		flyable: true,
+		tiles: 'blighted',
+		update:function(x,y,z){
+			if(map[z].magic[x][y] <= 0 ){
+				map[z].terrain[x][y] = terrains.drained.init();
+			}
+		},
+		init: function(x,y,z){
+			var t = Object.create(this);
+			t.tile = randomElt(terrainTiles[t.tiles])
+			t.priority = 0;
+			t.draw = variableDraw;
+			actionlist.add(map.turnNumber+1+Math.floor(5*Math.random()),function(){
+				map[z].terrain[x][y] = t; //delayed appearence
+				var a =[[x+1,y],[x-1,y],[x,y+1],[x,y-1]];
+				for(var i=0; i<4; i++){
+					if(map[z].legal(a[i][0],a[i][1]) && map[z].magic[a[i][0]][a[i][1]]>0 && 
+					map[z].terrain[a[i][0]][a[i][1]].name!=t.name && map[z].terrain[a[i][0]][a[i][1]].walkable){
+						 terrains.blightedGrowth.init(a[i][0],a[i][1],z);
+					}
+				}
+				map[z].magic[x][y] = Math.min(1,map[z].magic[x][y]);
+			});
 			return t;
 		}
 	}

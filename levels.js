@@ -191,9 +191,14 @@ function testLevel(level,depth){
 	var rooms = subdivide(giantRoom,9);
 	placeRoom(giantRoom,level);
 	fillRoom(giantRoom,level,depth,terrains.vegetation,1);
-	placeMagic(Math.floor(Math.random()*60),Math.floor(Math.random()*30),10,level,4);
-	placeMagic(Math.floor(Math.random()*60),Math.floor(Math.random()*30),10,level,4);
-	placeMagic(Math.floor(Math.random()*60),Math.floor(Math.random()*30),10,level,4);
+	for(var i=0; i<12; i++){
+		placeMagic(Math.floor(Math.random()*60),Math.floor(Math.random()*30),10+Math.floor(8*Math.random()),level,Math.random()*6);
+		
+	}
+	critters.unicorn.init(3,3,level);
+	critters.dryad.init(3,3,level);
+	critters.pixie.init(3,3,level);
+	critters.fairy.init(3,3,level);
 	findNeighbors(rooms,4);
 	var someRooms = [];
 	for(var i=0; i<rooms.length; i++){
