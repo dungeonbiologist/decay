@@ -90,7 +90,7 @@ function init() {
 			draw();
 		}
 	 }
-	window.addEventListener('mousedown', fireGun,false);
+	window.addEventListener('mousedown', fireSpell,false);
 	window.addEventListener('mousemove', movefn, false);
 	handleKeys
 	window.addEventListener("keydown", handleKeys, false);

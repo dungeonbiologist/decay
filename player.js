@@ -83,12 +83,16 @@ function initPlayer(){
 			this.drawSelf(context);
 		},
 		popup: false,
-		attack: function(critters,point,melee){
+		attack: function(critters,point,melee,amountofdamage){
 			for(var i=0; i<critters.length; i++){
 				if(melee){
 					var d = drain(this.place.x,this.place.y,this.place.z,20,1);
-					var damage = critters[i].attacked(point, this, Math.floor(d/4), false );
+					var damage = critters[i].attacked(point, this, Math.floor(d/4), !melee);
 					message('you drain '+d+' mana and strike the '+interned[critters[i].name]+' for '+damage+' damage',yellow);
+				}
+				else{
+					var damage = critters[i].attacked(point, this, amountofdamage, !melee);
+					message('you attack the '+interned[critters[i].name]+' for '+damage+' damage',yellow);
 				}
 			}
 		},
@@ -282,7 +286,8 @@ function handleKeys(evt) {
 		} else if(find(keys,68) || find(keys,190)){ //d
 			//player.dropping = true;
 			drain( player.place.x, player.place.y, player.place.z, 12 );
-		} else if(find(keys,70) && player.ammo>0){ //f
+		} else if(find(keys,70) && fireCone.enoughMana()){ //f
+			player.spell = fireCone;
 			player.state = 'shooting';
 		} else if(find(keys,77)){
 			player.state = 'messagelog';
@@ -326,7 +331,7 @@ function handleKeys(evt) {
 	}
 	else if( player.state == 'shooting'){
 		if( find(keys,13) || find(keys,70)){
-			//fireGun();
+			fireSpell();
 		}
 		player.state = 'moveing';
 	}
@@ -356,6 +361,13 @@ function fireGun(e){
 			achieve.ammoUsed++;
 			tick();
 		}
+		player.state = 'moveing';
+		draw();
+	}
+}
+function fireSpell(e){
+	if(player.state == 'shooting'){
+		player.spell.activate(player.place, mouseToGrid());
 		player.state = 'moveing';
 		draw();
 	}

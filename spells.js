@@ -49,15 +49,46 @@ fingerOfDeath = {
 		
 	},
 	description:'damages one adjacent target of your choosing for 20 damage. It uses 20 mana.'
-}
+};
 blight = {
 	name: intern('blight'),
-	range: 2,
+	range: 0,
 	level: 0,
-	mana: 20,
+	mana: 0,
 	target:'none',
 	activate:function(x,y,z){
 		map[z].terrain[x][y]=terrains.blightedGrowth.init(x,y,z);
 	},
 	key:[]
-}
+};
+fireCone = {
+	name: intern('cone of fire'),
+	range: 3,
+	level: 0,
+	mana: 30,
+	damage:10,
+	enoughMana: function(){
+		var mana = player.mana(this.range);
+		if(mana<this.mana){
+			message('you do not have enough  mana to cast '+interned[this.name]);
+			return false;
+		}
+		return true;
+	},
+	activate : function(orgin, target){
+		drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
+		var self = this;
+		line(orgin.x,orgin.y, target.x,target.y, 
+		function(x,y){
+			critters = map[player.place.z].newPoint(x,y).mobilesAt();
+			if(critters.length>0){
+				map[player.place.z].actionlist.add(map.turnNumber-1.5,function(){ 
+					player.attack(critters,map[player.place.z].newPoint(x,y),false,self.damage);
+				});
+				return false;
+			}
+			return map[player.place.z].terrain[x][y].flyable;
+		}
+	);
+	}
+};
