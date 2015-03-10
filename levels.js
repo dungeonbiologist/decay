@@ -211,9 +211,6 @@ function testLevel(level,depth){
 	shuffle(someRooms);
 	loopRooms(rooms, level,40)
 	for(var i=0; i<rooms.length; i++){
-		turbulate(rooms[i],2,7,level);
-	}
-	for(var i=0; i<rooms.length; i++){
 		placeRoom(rooms[i], level,terrains.dirtWall);
 	}
 	//placeRing(5,5,2,level,terrains.mushroom);

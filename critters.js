@@ -32,13 +32,20 @@ function initCritters(){
 		},
 		fairy: {
 			name:intern('fairy'),
-			maxHealth: 10,
-			speed: 1,
-			damage:2,
+			maxHealth: 5,
+			speed: 1.5,
+			damage:1,
 			hostile:true,
 			xp:20,
 			tiles: [tile(yellow,black,102)],
-			explain: 'Fairies love fresh flowers and the laughter of children.'
+			explain: 'Fairies love fresh flowers and the laughter of children.',
+			wakeup:function(silent){
+				if(!silent){
+					message('with a tinkle of laughter a fairy wakes up');
+				}
+				var self = this;
+				map[this.place.z].actionlist.add(map.turnNumber,function(){self.tick()});
+			}
 		}
 	};
 	var animalPrototype = {
@@ -86,7 +93,8 @@ function initCritters(){
 				this.die();
 				return;
 			}
-			for(var i=0; i<this.speed + ((this.vengeful && this.enemy)?1:0); i++){
+			var speed = dither(this.speed) + ((this.vengeful && this.enemy)?1:0);
+			for(var i=0; i<speed; i++){
 				if(this.enemy && this.withinRange(this.enemy.place,this.place, this)){
 					this.attack(this.enemy);
 				} else {
@@ -190,7 +198,6 @@ function initCritters(){
 			if(t.hostile){
 				t.enemy = player;
 			}
-			level.actionlist.add(map.turnNumber,function(){t.tick()});
 			return t;
 		},
 		draw: function(context){

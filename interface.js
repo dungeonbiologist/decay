@@ -69,7 +69,7 @@ function showHealth(context){
 	context.fillText('Level '+player.level(), 4 * tileWidth, place++ * tileHeight);
 	context.fillText(player.title, 2 * tileWidth, place++ * tileHeight);
 	context.fillText('Exp: '+currentXP+' / '+toNextLevel, 2 * tileWidth, place++ * tileHeight);
-	context.fillText('Mana '+player.mana(1) + ' / '+ player.mana(2)+ ' / '+ player.mana(3), 2 * tileWidth, place++ * tileHeight);
+	context.fillText('Mana '+player.mana(1)/* + ', '+ player.mana(2)+ ', '+ player.mana(3)*/, 2 * tileWidth, place++ * tileHeight);
 	context.fillText('Health '+player.buffedHealth() + ' / '+ player.maxHealth, 2 * tileWidth, place++ * tileHeight);
 	place++;
 	context.fillText(currentTime(), 2 * tileWidth, place++ * tileHeight);

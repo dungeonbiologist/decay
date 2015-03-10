@@ -7,9 +7,9 @@ function initPlayer(){
 		place: map[0].newPoint(5,5),
 		size: 2,
 		drawSelf: drawCritter(tile(darkRed,black,2),20),
-		health: 10,
+		health: 20,
 		critter: true,
-		maxHealth: 10,
+		maxHealth: 20,
 		strength: 2,
 		xp: 1,
 		dropping:false,	
@@ -86,8 +86,8 @@ function initPlayer(){
 		attack: function(critters,point,melee){
 			for(var i=0; i<critters.length; i++){
 				if(melee){
-					var d = drain(this.place.x,this.place.y,this.place.z,50,1);
-					var damage = critters[i].attacked(point, this, Math.floor(d/5), false );
+					var d = drain(this.place.x,this.place.y,this.place.z,20,1);
+					var damage = critters[i].attacked(point, this, Math.floor(d/4), false );
 					message('you drain '+d+' mana and strike the '+interned[critters[i].name]+' for '+damage+' damage',yellow);
 				}
 			}

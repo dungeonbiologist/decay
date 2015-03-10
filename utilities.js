@@ -1,6 +1,8 @@
 var achieve;
 function dither(num){ //probabilistic rounding, so the average remains the same
-	return Math.floor(num) + (Math.random()< (num-Math.floor(num)))? 1: 0;
+	var a = Math.floor(num);
+	var p = Math.random();
+	return a + ((p < (num-a))? 1: 0);
 }
 
 function copyInto(thinga, thingb){

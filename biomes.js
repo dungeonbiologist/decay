@@ -16,10 +16,10 @@ function initializeBiomes(){
 				var x = randomInt(room.x1+2,room.x2-2);
 				var y = randomInt(room.y1+2,room.y2-2);
 				placeRing(x,y, randomInt(1,2), level,terrains.mushroom);
+				var fairy = critters.fairy.init(x,y,level);
 				var wait = function(){
 					if(player.place.distance({x:x,y:y})<5){
-						critters.fairy.init(x,y,level);
-						message('with a tinkle of laughter a fairy pops into being');
+						fairy.wakeup();
 					}
 					else{
 						level.actionlist.add(map.turnNumber, wait);
