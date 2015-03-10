@@ -1,15 +1,17 @@
-function drain(x,y,z,amount){
-	var drainable = Math.min(amount, map[z].magic[x][y]);
-	map[z].magic[x][y] -= drainable;
-	amount -= drainable;
-	map[z].terrain[x][y].update(x,y,z);
-	
-	amount = drainTiles(map[z], [[x-1,y],[x+1,y],[x,y-1],[x,y+1]], amount, z);
-	amount = drainTiles(map[z], [[x-1,y-1],[x+1,y+1],[x+1,y-1],[x-1,y+1]], amount, z);
-	amount = drainTiles(map[z], [[x-2,y],[x+2,y],[x,y-2],[x,y+2]], amount, z);
+function drain(x,y,z,amount,range){
+	var remainder = amount;
+	var tiles = [[[x,y]],
+		[[x-1,y],[x+1,y],[x,y-1],[x,y+1]],
+		[[x-1,y-1],[x+1,y+1],[x+1,y-1],[x-1,y+1]],
+		[[x-2,y],[x+2,y],[x,y-2],[x,y+2]]]
+	for(var i=0; i<=range; i++){
+		remainder = drainTiles(map[z], tiles[i], remainder, z);
+	}
+	return amount - remainder;
 }
 
-function drainTiles(level, tiles, amount, z){
+function drainTiles(level, tiles, amount){
+	var z = level.depth;
 	shuffle(tiles);
 	var neighbors = [];
 	for(var i=0; i<tiles.length;i++){

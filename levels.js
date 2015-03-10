@@ -192,8 +192,9 @@ function testLevel(level,depth){
 	placeRoom(giantRoom,level);
 	fillRoom(giantRoom,level,depth,terrains.vegetation,1);
 	for(var i=0; i<12; i++){
-		//placeMagic(Math.floor(Math.random()*level.width),Math.floor(Math.random()*level.height),10+Math.floor(8*Math.random()),level,Math.random()*6);
-		//placeRing(Math.floor(Math.random()*level.width),Math.floor(Math.random()*level.height),2,level,terrains.mushroom);
+		placeMagic(randomInt(0,level.width-1),randomInt(0,level.width-1),randomInt(10,19),level,randomInt(1,6));
+	}
+	for(var i=0; i<6; i++){
 		var room = randomElt(rooms);
 		biome.fairyRing.init(room,level,depth);
 	}

@@ -6,7 +6,6 @@ function initCritters(){
 			maxHealth: 10,
 			speed: 1,
 			damage:10,
-			speed: 1,
 			xp:400,
 			drop: item.unicornHorn,
 			tiles: [tile(white,black,151)],
@@ -17,7 +16,6 @@ function initCritters(){
 			maxHealth: 10,
 			speed: 1,
 			damage:10,
-			speed: 1,
 			xp:400,
 			tiles: [tile(darkYellow,black,100)],
 			explain: 'Dryads plant saplings that protect the surrounding vegetation from your mana drain. Kill the dryad to remove the sapling.'
@@ -26,21 +24,21 @@ function initCritters(){
 			name:intern('pixie'),
 			maxHealth: 10,
 			speed: 1,
+			flutters:true,
 			damage:10,
-			speed: 1,
 			xp:400,
 			tiles: [tile(cyan,black,112)],
-			explain: 'Dryads plant saplings that protect the surrounding vegetation from your mana drain. Kill the dryad to remove the sapling.'
+			explain: 'pixie'
 		},
 		fairy: {
 			name:intern('fairy'),
 			maxHealth: 10,
 			speed: 1,
-			damage:10,
-			speed: 1,
-			xp:400,
+			damage:2,
+			hostile:true,
+			xp:20,
 			tiles: [tile(yellow,black,102)],
-			explain: 'Dryads plant saplings that protect the surrounding vegetation from your mana drain. Kill the dryad to remove the sapling.'
+			explain: 'Fairies love fresh flowers and the laughter of children.'
 		}
 	};
 	var animalPrototype = {
@@ -97,7 +95,7 @@ function initCritters(){
 				}
 			}
 			var self=this;
-			actionlist.add(map.turnNumber,function(){self.tick()});
+			map[this.place.z].actionlist.add(map.turnNumber,function(){self.tick()});
 		},
 		hunt: function(){
 			if(this.enemy && this.enemy.health >0){
@@ -117,7 +115,6 @@ function initCritters(){
 			map[this.place.z].mobiles.remove(this);
 			message('The '+interned[this.name]+' dies',darkYellow);
 			player.levelUp(this.xp);
-			player.fine(this.fine,this);
 			achieve.crittersKilled[this.name] = achieve.crittersKilled[this.name]+1 || 1;
 		},
 		at: function(point){
@@ -193,7 +190,7 @@ function initCritters(){
 			if(t.hostile){
 				t.enemy = player;
 			}
-			actionlist.add(map.turnNumber,function(){t.tick()});
+			level.actionlist.add(map.turnNumber,function(){t.tick()});
 			return t;
 		},
 		draw: function(context){

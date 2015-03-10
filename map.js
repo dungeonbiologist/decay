@@ -151,9 +151,9 @@ Point.prototype = {
 	terrainSet: function(newTerrain){
 		map[this.z].terrain[this.x][this.y] = newTerrain;
 	}
-}
+};
 function makemap(width,height) {
-	return {
+	var m = {
 		width: width,
 		height: height,
 		mobiles: thingList(),
@@ -190,7 +190,23 @@ function makemap(width,height) {
 		}),
 		seen: makeArray(width, height, function() {
 			return terrainTiles.blank[0]; //set all the tiles to black to start with
-		})
+		}),
+		actionlist:[]
 	};
+	m.actionlist.tick = function(turn){
+		this.sort(function(a,b){return a.turn-b.turn;});
+		while(this.length>0){
+			var a = this.shift();
+			if(a.turn >= turn){
+				this.push(a);
+				break;
+			}
+			a.tick();
+		}
+	};
+	m.actionlist.add = function(turn,tick){
+		this.push({turn:turn, tick:tick});
+	};
+	return m;
 }
 var map;

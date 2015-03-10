@@ -47,17 +47,19 @@ function acend(){
 }
 
 function tick(){
+	
 	map.turnNumber++;
 	if(player.health<=0 ){
 		lose();
 		return;
 	}
-	var p = player.place
-	var terrain = map[p.z].terrain[p.x][p.y].name;
-	if(map[p.z].down && p.same(map[p.z].down )){
+	var p = player.place;
+	var level = map[p.z];
+	var terrain = level.terrain[p.x][p.y].name;
+	if(level.down && p.same(level.down )){
 		decend();
 	} else 
-	if(map[p.z].up && p.same(map[p.z].up )){
+	if(level.up && p.same(level.up )){
 		if(p.z === 0){
 			if( win()){
 				return;
@@ -66,11 +68,7 @@ function tick(){
 			acend()
 		}
 	}
-	var level = map[p.z];
-	actionlist.tick(map.turnNumber);
-	level.mobiles.forall(function (thing) {
-		//thing.tick();
-	});
+	level.actionlist.tick(map.turnNumber);
 }
 function init() {
 	if (window.Event) {

@@ -17,14 +17,15 @@ function initializeBiomes(){
 				var y = randomInt(room.y1+2,room.y2-2);
 				placeRing(x,y, randomInt(1,2), level,terrains.mushroom);
 				var wait = function(){
-					if(player.place.distance({x:x,y:y})<=5){
+					if(player.place.distance({x:x,y:y})<5){
 						critters.fairy.init(x,y,level);
+						message('with a tinkle of laughter a fairy pops into being');
 					}
 					else{
-						actionlist.add(map.turnNumber, wait);
+						level.actionlist.add(map.turnNumber, wait);
 					}
 				}
-				actionlist.add(map.turnNumber, wait);
+				level.actionlist.add(map.turnNumber, wait);
 			}
 		},
 		gatorHole : {

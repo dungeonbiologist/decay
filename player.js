@@ -83,22 +83,14 @@ function initPlayer(){
 			this.drawSelf(context);
 		},
 		popup: false,
-		attack: function(point,melee){
-			var critters = point.mobilesAt();
-			var hitcritter= false
+		attack: function(critters,point,melee){
 			for(var i=0; i<critters.length; i++){
-				if(!melee){
-					var damage = critters[i].attacked(point, this, 20, true );
-					message('you shoot a '+interned[critters[i].name]+' for '+damage+' damage',yellow);
-					hitcritter=true;
-				} else if(critters[i].size + this.size >= 4){
-					var d = this.buffedStrength();
-					var damage = critters[i].attacked(point, this, d );
-					message('you strike a '+interned[critters[i].name]+' for '+damage+' damage',yellow);
-					hitcritter=true;
+				if(melee){
+					var d = drain(this.place.x,this.place.y,this.place.z,50,1);
+					var damage = critters[i].attacked(point, this, Math.floor(d/5), false );
+					message('you drain '+d+' mana and strike the '+interned[critters[i].name]+' for '+damage+' damage',yellow);
 				}
 			}
-			return hitcritter;
 		},
 		attacked: function(point, thing, damage){
 			damage -= damage*dither(this.buffedDefense() / (25+this.buffedDefense()));
@@ -115,7 +107,6 @@ function initPlayer(){
 		recordLocation:function(array){
 			array[this.place.x][this.place.y].push(this);
 		},
-		tick: function(){},
 		levelUp: function(xp){
 			message('you gain '+xp+' experience.',green);
 			var level = this.level();
@@ -214,7 +205,11 @@ function move(){
 			pickUp(player.place.itemsAt());
 			tick();
 		} else{
-			if( player.attack(player.place.add(dir), true)){
+			var critters = player.place.add(dir).mobilesAt();
+			if( critters.length > 0){
+				map[player.place.z].actionlist.add(map.turnNumber-0.5,function(){ 
+					player.attack(critters, player.place.add(dir), true); 
+				});
 				tick();
 			} else {
 				message('that way is blocked');

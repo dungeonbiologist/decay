@@ -49,11 +49,13 @@ function showHealth(context){
 	var currentXP = (player.xp-Math.pow(player.level(),3));
 	var toNextLevel =  (Math.pow(player.level()+1,3)-Math.pow(player.level(),3));
 	context.fillRect(tileWidth, 2 * tileHeight, 8 * tileWidth * currentXP/toNextLevel, tileHeight);
-	
-	context.fillStyle = color[darkCyan];
-	context.fillRect(tileWidth, 3 * tileHeight,  tileWidth*player.mana(1)/4, tileHeight);
+	var maxmana = 4*(25)/8;
 	context.fillStyle = color[cyan];
-	context.fillRect(tileWidth + tileWidth*player.mana(1)/4, 3 * tileHeight,  tileWidth*(player.mana(2)-player.mana(1))/4, tileHeight);
+	context.fillRect(tileWidth, 3 * tileHeight,  tileWidth*player.mana(1)/maxmana, tileHeight);
+	context.fillStyle = color[blue];
+	context.fillRect(tileWidth + tileWidth*player.mana(1)/maxmana, 3 * tileHeight,  tileWidth*(player.mana(2)-player.mana(1))/maxmana, tileHeight);
+	context.fillStyle = color[darkBlue];
+	context.fillRect(tileWidth + tileWidth*player.mana(2)/maxmana, 3 * tileHeight,  tileWidth*(player.mana(3)-player.mana(2))/maxmana, tileHeight);
 	
 	var extra = player.buffedHealth() - player.health;
 	var max = player.maxHealth;
@@ -67,7 +69,7 @@ function showHealth(context){
 	context.fillText('Level '+player.level(), 4 * tileWidth, place++ * tileHeight);
 	context.fillText(player.title, 2 * tileWidth, place++ * tileHeight);
 	context.fillText('Exp: '+currentXP+' / '+toNextLevel, 2 * tileWidth, place++ * tileHeight);
-	context.fillText('Mana '+player.mana(1) + ' / '+ (player.mana(2)-player.mana(1)), 2 * tileWidth, place++ * tileHeight);
+	context.fillText('Mana '+player.mana(1) + ' / '+ player.mana(2)+ ' / '+ player.mana(3), 2 * tileWidth, place++ * tileHeight);
 	context.fillText('Health '+player.buffedHealth() + ' / '+ player.maxHealth, 2 * tileWidth, place++ * tileHeight);
 	place++;
 	context.fillText(currentTime(), 2 * tileWidth, place++ * tileHeight);

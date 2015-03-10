@@ -1,19 +1,4 @@
 var achieve;
-var actionlist = [];
-actionlist.tick = function(turn){
-	this.sort(function(a,b){return a.turn-b.turn;});
-	while(this.length>0){
-		var a = this.shift();
-		if(a.turn >= turn){
-			this.push(a);
-			break;
-		}
-		a.tick();
-	}
-}
-actionlist.add = function(turn,tick){
-	this.push({turn:turn, tick:tick});
-}
 function dither(num){ //probabilistic rounding, so the average remains the same
 	return Math.floor(num) + (Math.random()< (num-Math.floor(num)))? 1: 0;
 }

@@ -260,7 +260,7 @@ function initTerrains(){
 		},
 		init: function(x,y,z){
 			var t = initTerrain.call(this);
-			actionlist.add(map.turnNumber+Math.floor(5*Math.random()),function(){
+			map[z].actionlist.add(map.turnNumber+Math.floor(5*Math.random()),function(){
 				map[z].terrain[x][y] = t; //delayed appearence
 				var a =[[x+1,y],[x-1,y],[x,y+1],[x,y-1]];
 				for(var i=0; i<4; i++){
