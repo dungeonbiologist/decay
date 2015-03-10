@@ -109,7 +109,7 @@ function reInit(){
 			view[i][j] = -1;
 		}
 	}
-	map = [makemap(60,30),makemap(60,30),makemap(60,30),makemap(60,30),makemap(60,30),makemap(60,30),makemap(60,30)];
+	map = [makemap(60,30)];//,makemap(60,30),makemap(60,30),makemap(60,30),makemap(60,30),makemap(60,30),makemap(60,30)];
 	for(var i=0; i<map.length; i++){
 		map[i].depth = i;
 	}

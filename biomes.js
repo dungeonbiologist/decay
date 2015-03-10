@@ -7,9 +7,26 @@ function initbiome(room,level,depth){
 		randomElt(this.inhabitants).init(center.x,center.y,level);
 	}
 }
+
 var biome;
 function initializeBiomes(){
 	biome = {
+		fairyRing : {
+			init:function(room,level,depth){
+				var x = randomInt(room.x1+2,room.x2-2);
+				var y = randomInt(room.y1+2,room.y2-2);
+				placeRing(x,y, randomInt(1,2), level,terrains.mushroom);
+				var wait = function(){
+					if(player.place.distance({x:x,y:y})<=5){
+						critters.fairy.init(x,y,level);
+					}
+					else{
+						actionlist.add(map.turnNumber, wait);
+					}
+				}
+				actionlist.add(map.turnNumber, wait);
+			}
+		},
 		gatorHole : {
 			pattern: carveCave,
 			terrains: [terrains.muddyWater, 1],
@@ -78,3 +95,4 @@ function initializeBiomes(){
 		}
 	};
 }
+

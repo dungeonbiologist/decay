@@ -17,7 +17,7 @@ function findOpenPoint(level,depth){
 	}while(!level.terrain[point.x][point.y].walkable);
 	return point;
 }
-function placeTerrain(x,y,diameter,level,item, frequency){
+function placeTerrain(x, y, diameter, level, item, frequency){
 	var min = 0 - Math.floor(diameter/2);
 	var max = diameter - Math.floor(diameter/2);
 	for(var i=x + min; i<x+ max; i++){
@@ -28,8 +28,22 @@ function placeTerrain(x,y,diameter,level,item, frequency){
 		}
 	}
 }
- 
-function placeMagic(x,y,diameter,level,peak){
+
+function placeRing(x,y,radius/* faked for now*/,level,item){
+	if(radius==1){
+		var points = [[-1,-1],[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0]];
+	}
+	if(radius==2){
+		var points = [[-2,-2],[-1,-2],[0,-3],[1,-2],[2,-2],[2,-1],[3,0],[2,1],[2,2],[1,2],[0,3],[-1,2],[-2,2],[-2,1],[-3,0],[-2,-1]];
+	}
+	for(var i=0; i<points.length; i++){
+		if(level.legal(x+points[i][0],y+points[i][1])){
+			level.terrain[x+points[i][0]][y+points[i][1]]=item.init();
+		}
+	}
+}
+
+function placeMagic(x, y, diameter, level, peak){
 	var min = 0 - Math.floor(diameter/2);
 	var max = diameter - Math.floor(diameter/2);
 	for(var i=x + min; i<x+ max; i++){

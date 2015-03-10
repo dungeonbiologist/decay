@@ -4,7 +4,7 @@ actionlist.tick = function(turn){
 	this.sort(function(a,b){return a.turn-b.turn;});
 	while(this.length>0){
 		var a = this.shift();
-		if(a.turn > turn){
+		if(a.turn >= turn){
 			this.push(a);
 			break;
 		}
@@ -103,7 +103,7 @@ function makenum(maybe,num){
 	return num;
 }
 
-function randomInt(min, max) {
+function randomInt(min, max) {//inclusive
 //	assert(min <= max, 'min ' + min + ' greater than max ' + max);
 	var diff = max + 1 - min;
 	return Math.floor(min + Math.random() * diff);

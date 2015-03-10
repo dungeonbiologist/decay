@@ -43,8 +43,9 @@ fingerOfDeath = {
 	level: 0,
 	mana: 20,
 	target:'directional',
-	activate:function(){},
-	key:[],
+	activate:function(x,y,z){
+		
+	},
 	description:'damages one adjacent target of your choosing for 20 damage. It uses 20 mana.'
 }
 blight = {

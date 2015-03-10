@@ -97,7 +97,7 @@ function initCritters(){
 				}
 			}
 			var self=this;
-			actionlist.add(map.turnNumber+1,function(){self.tick()});
+			actionlist.add(map.turnNumber,function(){self.tick()});
 		},
 		hunt: function(){
 			if(this.enemy && this.enemy.health >0){
@@ -193,7 +193,7 @@ function initCritters(){
 			if(t.hostile){
 				t.enemy = player;
 			}
-			actionlist.add(map.turnNumber+1,function(){t.tick()});
+			actionlist.add(map.turnNumber,function(){t.tick()});
 			return t;
 		},
 		draw: function(context){

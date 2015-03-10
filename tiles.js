@@ -95,7 +95,7 @@ function drawCritter(tile,priority) {
 		character: [247, 126]
 	}, 
 	mushroom: {
-		foreground: [darkMagenta, darkRed],
+		foreground: [white],//darkMagenta, darkRed,darkYellow],
 		background: [black],
 		character: [6,24]
 	}, 

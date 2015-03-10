@@ -237,6 +237,17 @@ function initTerrains(){
 		tiles: 'drained',
 		init: initTerrain
 	},
+	sapling: {
+		name: intern('sapling'),
+		walkable: true,
+		flyable: true,
+		tiles: 'sapling',
+		init: function(x,y,z){
+			var t = initTerrain.call(this);
+			map[z].terrain[x][y]=t;
+			return t;
+		}
+	},
 	blightedGrowth: {
 		name: intern('blighted growth'),
 		walkable: true,
@@ -248,11 +259,8 @@ function initTerrains(){
 			}
 		},
 		init: function(x,y,z){
-			var t = Object.create(this);
-			t.tile = randomElt(terrainTiles[t.tiles])
-			t.priority = 0;
-			t.draw = variableDraw;
-			actionlist.add(map.turnNumber+1+Math.floor(5*Math.random()),function(){
+			var t = initTerrain.call(this);
+			actionlist.add(map.turnNumber+Math.floor(5*Math.random()),function(){
 				map[z].terrain[x][y] = t; //delayed appearence
 				var a =[[x+1,y],[x-1,y],[x,y+1],[x,y-1]];
 				for(var i=0; i<4; i++){

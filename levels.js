@@ -192,13 +192,16 @@ function testLevel(level,depth){
 	placeRoom(giantRoom,level);
 	fillRoom(giantRoom,level,depth,terrains.vegetation,1);
 	for(var i=0; i<12; i++){
-		placeMagic(Math.floor(Math.random()*60),Math.floor(Math.random()*30),10+Math.floor(8*Math.random()),level,Math.random()*6);
-		
+		//placeMagic(Math.floor(Math.random()*level.width),Math.floor(Math.random()*level.height),10+Math.floor(8*Math.random()),level,Math.random()*6);
+		//placeRing(Math.floor(Math.random()*level.width),Math.floor(Math.random()*level.height),2,level,terrains.mushroom);
+		var room = randomElt(rooms);
+		biome.fairyRing.init(room,level,depth);
 	}
-	critters.unicorn.init(3,3,level);
+	/*critters.unicorn.init(3,3,level);
 	critters.dryad.init(3,3,level);
 	critters.pixie.init(3,3,level);
 	critters.fairy.init(3,3,level);
+	*/
 	findNeighbors(rooms,4);
 	var someRooms = [];
 	for(var i=0; i<rooms.length; i++){
@@ -212,6 +215,7 @@ function testLevel(level,depth){
 	for(var i=0; i<rooms.length; i++){
 		placeRoom(rooms[i], level,terrains.dirtWall);
 	}
+	//placeRing(5,5,2,level,terrains.mushroom);
 	placeStairs(level,depth,rooms);
 	//level.magic.forall(function(t,x,y){ level.magic[x][y] = Math.floor(x/13); });
 }
