@@ -291,6 +291,9 @@ function handleKeys(evt) {
 			player.state = 'choose direction';
 			message('choose a direction');
 			//player.state = 'shooting';
+		} else if(find(keys,84) && teleport.enoughMana()){ //t
+			player.spell = teleport;
+			player.state = 'shooting';
 		} else if(find(keys,77)){
 			player.state = 'messagelog';
 		} else if(getDirection(keys)) { //sets dirSelected
@@ -377,11 +380,9 @@ function fireGun(e){
 function fireSpell(e){
 	if(player.state == 'shooting'){
 		player.spell.activate(player.place, mouseToGrid());
+		player.spell = false;
 		player.state = 'moveing';
 		draw();
-	}
-	else {
-		animate(3,3, mapcar(animations.coneOfFire,function(a){ return rotate(3,a); }));
 	}
 }
 function examine(point) {

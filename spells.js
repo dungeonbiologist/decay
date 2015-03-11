@@ -114,22 +114,41 @@ fireCone = {
 			mapcar(animations.coneOfFire.slice(0,i+1), function(a){return rotate(angle, a);} ) );
 	}
 };
-
-/*
-activate : function(orgin, target){
-		drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
+teleport = {
+	name: intern('teleport'),
+	range: 3,
+	level: 0,
+	mana: 20,
+	enoughMana: function(){
+		var mana = player.mana(this.range);
+		if(mana<this.mana){
+			message('you do not have enough  mana to cast '+interned[this.name]);
+			return false;
+		}
+		return true;
+	},
+	activate : function(orgin, target){
 		var self = this;
+		var ended = orgin;
 		line(orgin.x,orgin.y, target.x,target.y, 
 		function(x,y){
 			critters = map[player.place.z].newPoint(x,y).mobilesAt();
 			if(critters.length>0){
-				map[player.place.z].actionlist.add(map.turnNumber-1.5,function(){ 
-					player.attack(critters,map[player.place.z].newPoint(x,y),false,self.damage);
-				});
 				return false;
 			}
+			ended = map[player.place.z].newPoint(x,y);
 			return map[player.place.z].terrain[x][y].flyable;
+		});
+		if(orgin.same(ended)){
+			message('teleport failed', yellow);
+			return;
 		}
-	);
+		drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
+		drain(ended.x,ended.y,ended.z,orgin.distance(ended)*4,this.range);
+		player.dirSelected = player.place.diff(ended);
+		move();
 	}
+};
+/*
+
 */
