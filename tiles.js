@@ -29,6 +29,11 @@ function drawCritter(tile,priority) {
 	};
 }
  var tileData = {
+ 	smoke:{
+ 		foreground: [white,grey,darkGrey],
+		background: [black],
+		character: [35]
+ 	},
 	blank: {
 		foreground: [white],
 		background: [black],
@@ -152,7 +157,7 @@ function drawCritter(tile,priority) {
 	fire: {
 		foreground: [red, yellow, darkRed],
 		background: [red, yellow, darkRed],
-		character: [15,38,42]
+		character: [15,42]
 	}, 
 	rock: {
 		foreground: [grey, darkWhite],

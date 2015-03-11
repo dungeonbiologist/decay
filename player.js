@@ -288,10 +288,12 @@ function handleKeys(evt) {
 			drain( player.place.x, player.place.y, player.place.z, 12 );
 		} else if(find(keys,70) && fireCone.enoughMana()){ //f
 			player.spell = fireCone;
-			player.state = 'shooting';
+			player.state = 'choose direction';
+			message('choose a direction');
+			//player.state = 'shooting';
 		} else if(find(keys,77)){
 			player.state = 'messagelog';
-		} else if(getDirection(keys)) { //sets dirSelecteed
+		} else if(getDirection(keys)) { //sets dirSelected
 			move();
 		} else if( find(keys,32)){
 			tick();
@@ -335,6 +337,13 @@ function handleKeys(evt) {
 		}
 		player.state = 'moveing';
 	}
+	else if( player.state == 'choose direction'){
+		if( getDirection(keys) && player.spell){
+			player.spell.activate(player.place, player.dirSelected);
+			player.spell = false;
+		}
+		player.state = 'moveing';
+	}
 	var p = player.place
 	for(var i=0; i<player.inventory.length; i++){
 		if(player.inventory[i]){
@@ -370,6 +379,9 @@ function fireSpell(e){
 		player.spell.activate(player.place, mouseToGrid());
 		player.state = 'moveing';
 		draw();
+	}
+	else {
+		animate(3,3, mapcar(animations.coneOfFire,function(a){ return rotate(3,a); }));
 	}
 }
 function examine(point) {

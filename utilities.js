@@ -103,3 +103,29 @@ function makeVect(n,elt){
 	} 
 	return arry; 
 }
+
+function mapcar(vect,fn){
+	var result = [];
+	for(var i=0; i<vect.length; i++){
+		result[i] = fn(vect[i]);
+	}
+	return result;
+} 
+
+function rotate(angle,array){
+	var sink = [[],[],[],[]];
+	for(var i=0; i<4; i++){
+		for(var j=0; j<array.length; j++){
+			sink[i][j]  = [];
+		}
+	}
+	for(var i=0; i<array.length; i++){
+		for(var j=0; j<array[i].length; j++){
+			sink[0][i][i] = array[i][j];
+			sink[1][array[i].length-1-j][i] = array[i][j];
+			sink[2][array.length-1-i][array[i].length-1-j] = array[i][j];
+			sink[3][j][array.length-1-i] = array[i][j];
+		}
+	}
+	return sink[angle%4];
+}

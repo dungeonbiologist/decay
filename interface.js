@@ -20,6 +20,12 @@ function mouseToGrid() {
 		Math.floor((mouse.y - 8) / tileHeight)
 	);
 }
+function gridToMouse(x,y){
+	return {
+		x:(hudWidth+x)*tileWidth,
+		y:y*tileHeight,
+	};
+}
 var textbox;
 function setTextbox(x,y,width,height,context){
 	context.fillStyle = color[black];
@@ -132,6 +138,7 @@ function examinationMessagebox(context){
 	}
 }
 function draw() {
+	if(animation.running){ return; }
 	clearView();
 	var canvas = document.getElementById("canvas");
 	//var canvas = document.createElement('canvas');

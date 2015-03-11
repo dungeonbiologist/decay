@@ -99,6 +99,7 @@ function init() {
 	initItems();
 	initCritters();
 	initializeBiomes();
+	initAnimations();
 	reInit();
 }
 function reInit(){
