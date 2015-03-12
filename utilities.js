@@ -1,4 +1,8 @@
 var achieve;
+function med(a,b,c){
+	return Math.max(a,Math.min(b,c));
+}
+
 function dither(num){ //probabilistic rounding, so the average remains the same
 	var a = Math.floor(num);
 	var p = Math.random();
@@ -121,7 +125,7 @@ function rotate(angle,array){
 	}
 	for(var i=0; i<array.length; i++){
 		for(var j=0; j<array[i].length; j++){
-			sink[0][i][i] = array[i][j];
+			sink[0][i][j] = array[i][j];
 			sink[1][array[i].length-1-j][i] = array[i][j];
 			sink[2][array.length-1-i][array[i].length-1-j] = array[i][j];
 			sink[3][j][array.length-1-i] = array[i][j];

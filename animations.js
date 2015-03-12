@@ -11,7 +11,7 @@ function animate(x,y,frames){
 	var context = canvas2.getContext('2d');
 	var g = gridToMouse(x,y);
 	
-	context.drawImage(canvas,g.x,g.y,width*tileWidth, height*tileHeight,0,0,canvas2.width,canvas2.height);
+	context.drawImage(canvas,med(0,g.x,canvas.width-width*tileWidth),med(0,g.y,canvas.height-height*tileHeight),width*tileWidth, height*tileHeight,0,0,canvas2.width,canvas2.height);
 	animation = {
 		canvas : canvas2,
 		frames : frames,

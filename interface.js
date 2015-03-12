@@ -82,11 +82,12 @@ function showHealth(context){
 	return place
 }
 function showStatuses(context,place){
-	place++;
+	/*place++;
 	context.fillStyle = color[darkGreen];
 	context.fillRect(tileWidth, (place-1) * tileHeight, 8 * tileWidth * player.currentPoison/player.maxPoison, tileHeight);
 	context.fillStyle = color[white];
 	context.fillText('Poison: '+player.currentPoison, 2 * tileWidth, place++ * tileHeight);
+	*/
 }
 function manageInventory(context){
 	if(player.state == 'inventory' || player.dropping){

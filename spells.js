@@ -7,6 +7,7 @@ function drain(x,y,z,amount,range){
 	for(var i=0; i<=range; i++){
 		remainder = drainTiles(map[z], tiles[i], remainder, z);
 	}
+	message('you drain '+(amount - remainder)+' mana', yellow);
 	return amount - remainder;
 }
 
@@ -43,10 +44,11 @@ fingerOfDeath = {
 	name: intern('finger of death'),
 	range: 1,
 	level: 0,
-	mana: 20,
+	mana: 10,
 	target:'directional',
-	activate:function(x,y,z){
-		
+	activate:function(orgin,critter,point){
+		var d = drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
+		return critters.attacked(point, player, Math.floor(d/this.efficiency), !melee);
 	},
 	description:'damages one adjacent target of your choosing for 20 damage. It uses 20 mana.'
 };
@@ -62,11 +64,12 @@ blight = {
 	key:[]
 };
 fireCone = {
-	name: intern('cone of fire'),
+	name: intern('Cone of Fire'),
 	range: 3,
 	level: 0,
-	mana: 30,
+	mana: 10,
 	damage:10,
+	explain:'Cone of Fire costs 30 mana and does 10 damage to each enemy it hits',
 	enoughMana: function(){
 		var mana = player.mana(this.range);
 		if(mana<this.mana){
@@ -92,7 +95,7 @@ fireCone = {
 				points[i+1].push( points[i+1][points[i+1].length-1].add(right) );
 			}
 		}
-		var angle = direction.y + direction.x + Math.abs(direction.x) +1; //0 through 3
+		var angle = -direction.y + direction.x + Math.abs(direction.x) +1; //0 through 3
 		for(var i=0; i<points.length; i++){
 			var cntn= true;
 			for(var j=0; j<points[i].length; j++){
@@ -118,7 +121,9 @@ teleport = {
 	name: intern('teleport'),
 	range: 3,
 	level: 0,
-	mana: 20,
+	mana: 10,
+	cost:1,
+	explain : 'Teleport moves you in a strait line until you hit an obstacle. It costs 20 mana, and uses additional mana proportional to the distance.',
 	enoughMana: function(){
 		var mana = player.mana(this.range);
 		if(mana<this.mana){
@@ -144,7 +149,7 @@ teleport = {
 			return;
 		}
 		drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
-		drain(ended.x,ended.y,ended.z,orgin.distance(ended)*4,this.range);
+		drain(ended.x,ended.y,ended.z,orgin.distance(ended)*this.cost,this.range);
 		player.dirSelected = player.place.diff(ended);
 		move();
 	}

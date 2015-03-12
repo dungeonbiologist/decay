@@ -86,9 +86,8 @@ function initPlayer(){
 		attack: function(critters,point,melee,amountofdamage){
 			for(var i=0; i<critters.length; i++){
 				if(melee){
-					var d = drain(this.place.x,this.place.y,this.place.z,20,1);
-					var damage = critters[i].attacked(point, this, Math.floor(d/4), !melee);
-					message('you drain '+d+' mana and strike the '+interned[critters[i].name]+' for '+damage+' damage',yellow);
+					var damage = fingerOfDeath.activate(player.place,critters,point);
+					message('you strike the '+interned[critters[i].name]+' for '+damage+' damage',yellow);
 				}
 				else{
 					var damage = critters[i].attacked(point, this, amountofdamage, !melee);
@@ -227,6 +226,12 @@ function setInstructions(){
 		'Use the mouse to look at things',
 		'',
 		'? calls up instructions',
+		'',
+		'bump to attack, does 1 damage for every 1 mana it drains from the tiles around you',
+		'',
+		'f casts a cone of fire that drains 10 mana from the surrounding 13 tiles and does 10 damage',
+		'',
+		't casts teleport. Teleport moves you in a strait line until you hit an obstacle. It costs 20 mana, and uses additional mana proportional to the distance',
 		'',
 		'd drains the life out of surrounding vegetation',
 		'',
