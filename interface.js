@@ -50,36 +50,42 @@ function currentTime(){
 	
 }
 function showHealth(context){
+	var place1=1;
 	context.fillRect(0, 0, hudWidth * tileWidth, 5 * tileHeight);
 	context.fillStyle = color[darkGreen];
 	var currentXP = (player.xp-Math.pow(player.level(),3));
 	var toNextLevel =  (Math.pow(player.level()+1,3)-Math.pow(player.level(),3));
-	context.fillRect(tileWidth, 2 * tileHeight, 8 * tileWidth * currentXP/toNextLevel, tileHeight);
-	var maxmana = 4*(25)/8;
+	context.fillRect(tileWidth, place1++ * tileHeight, 8 * tileWidth * currentXP/toNextLevel, tileHeight);
+	var mana1 = tileWidth*player.mana(1)/(4*(5)/2); //mana/(max mana in a tile * tiles in that range /how wide the bar is)
+	var mana2 = tileWidth*(player.mana(2)-player.mana(1))/(4*(9)/3);
+	var mana3 = tileWidth*(player.mana(3)-player.mana(2))/(4*(12)/3);
 	context.fillStyle = color[cyan];
-	context.fillRect(tileWidth, 3 * tileHeight,  tileWidth*player.mana(1)/maxmana, tileHeight);
+	context.fillRect(tileWidth, place1 * tileHeight,  mana1, tileHeight);
 	context.fillStyle = color[blue];
-	context.fillRect(tileWidth + tileWidth*player.mana(1)/maxmana, 3 * tileHeight,  tileWidth*(player.mana(2)-player.mana(1))/maxmana, tileHeight);
+	context.fillRect(tileWidth + mana1, place1 * tileHeight,  mana2, tileHeight);
 	context.fillStyle = color[darkBlue];
-	context.fillRect(tileWidth + tileWidth*player.mana(2)/maxmana, 3 * tileHeight,  tileWidth*(player.mana(3)-player.mana(2))/maxmana, tileHeight);
+	context.fillRect(tileWidth + mana1 + mana2, place1++ * tileHeight,  mana3, tileHeight);
 	
 	var extra = player.buffedHealth() - player.health;
 	var max = player.maxHealth;
 	context.fillStyle = color[darkGreen];
-	context.fillRect(tileWidth, 4 * tileHeight,  8*tileWidth*Math.min(player.buffedHealth(), max)/(max+extra), tileHeight);
+	context.fillRect(tileWidth, place1 * tileHeight,  8*tileWidth*Math.min(player.buffedHealth(), max)/(max+extra), tileHeight);
 	context.fillStyle = color[green];
-	context.fillRect(tileWidth + 8*tileWidth*max/(max+extra), 4 * tileHeight,  8*tileWidth* Math.max(0,(player.buffedHealth()- max)/(max+extra)), tileHeight);
+	context.fillRect(tileWidth + 8*tileWidth*max/(max+extra), place1++ * tileHeight,  8*tileWidth* Math.max(0,(player.buffedHealth()- max)/(max+extra)), tileHeight);
 	
 	context.fillStyle = color[white];
 	var place = 0.75;
 	context.fillText('Level '+player.level(), 4 * tileWidth, place++ * tileHeight);
-	context.fillText(player.title, 2 * tileWidth, place++ * tileHeight);
+	//context.fillText(player.title, 2 * tileWidth, place++ * tileHeight);
 	context.fillText('Exp: '+currentXP+' / '+toNextLevel, 2 * tileWidth, place++ * tileHeight);
-	context.fillText('Mana '+player.mana(1)/* + ', '+ player.mana(2)+ ', '+ player.mana(3)*/, 2 * tileWidth, place++ * tileHeight);
-	context.fillText('Health '+player.buffedHealth() + ' / '+ player.maxHealth, 2 * tileWidth, place++ * tileHeight);
+	context.fillText('Mana: '+player.mana(1) + ' > '+ player.mana(2)+ ' > '+ player.mana(3), 2 * tileWidth, place++ * tileHeight);
+	context.fillText('Health: '+player.buffedHealth() + ' / '+ player.maxHealth, 2 * tileWidth, place++ * tileHeight);
 	place++;
 	context.fillText(currentTime(), 2 * tileWidth, place++ * tileHeight);
 	return place
+}
+function examineHud(coord){
+
 }
 function showStatuses(context,place){
 	/*place++;
@@ -136,6 +142,9 @@ function examinationMessagebox(context){
 		for (var i = 0; i < text.length; i++) {
 			printToTextbox(text[i], context);
 		}
+	}
+	else {
+		examineHud(coord);
 	}
 }
 function draw() {

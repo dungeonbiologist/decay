@@ -86,7 +86,7 @@ function initPlayer(){
 		attack: function(critters,point,melee,amountofdamage){
 			for(var i=0; i<critters.length; i++){
 				if(melee){
-					var damage = fingerOfDeath.activate(player.place,critters,point);
+					var damage = fingerOfDeath.activate(player.place,critters[i],point);
 					message('you strike the '+interned[critters[i].name]+' for '+damage+' damage',yellow);
 				}
 				else{
@@ -344,11 +344,13 @@ function handleKeys(evt) {
 			fireSpell();
 		}
 		player.state = 'moveing';
+		tick();
 	}
 	else if( player.state == 'choose direction'){
 		if( getDirection(keys) && player.spell){
 			player.spell.activate(player.place, player.dirSelected);
 			player.spell = false;
+			tick();
 		}
 		player.state = 'moveing';
 	}

@@ -45,10 +45,11 @@ fingerOfDeath = {
 	range: 1,
 	level: 0,
 	mana: 10,
+	efficiency:1,
 	target:'directional',
 	activate:function(orgin,critter,point){
 		var d = drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
-		return critters.attacked(point, player, Math.floor(d/this.efficiency), !melee);
+		return critter.attacked(point, player, Math.floor(d/this.efficiency), false);
 	},
 	description:'damages one adjacent target of your choosing for 20 damage. It uses 20 mana.'
 };
@@ -103,9 +104,11 @@ fireCone = {
 				cntn = cntn && points[i][j].terrainAt().flyable;
 				if(critters.length>0){
 					cntn  = false;
-					map[player.place.z].actionlist.add(map.turnNumber-1.5,function(){ 
-						player.attack(critters,points[i][j],false,self.damage);
-					});
+					(function(point){
+						map[player.place.z].actionlist.add(map.turnNumber-1.5,function(){ 
+							player.attack(critters,point,false,self.damage);
+						});
+					})(points[i][j]);
 				}
 			}
 			if(!cntn){

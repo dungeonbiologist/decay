@@ -1,7 +1,7 @@
 function win(){
 	var test = true; //false;
 	map[player.place.z].mobiles.forall(function(thing){
-		test = test && critters.fairy.name != thing.name;
+		test = test && critters['fairy'].name != thing.name;
 	});/*
 	for( var i=0; i<player.inventory.length; i++){
 		if(player.inventory[i] && player.inventory[i].name && interned[player.inventory[i].name] == 'Unicorn Horn'){
@@ -71,7 +71,7 @@ function tick(){
 			acend()
 		}
 	}
-	level.actionlist.tick(map.turnNumber);
+	map[p.z].actionlist.tick(map.turnNumber);
 }
 function init() {
 	if (window.Event) {
