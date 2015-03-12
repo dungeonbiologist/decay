@@ -289,7 +289,12 @@ function handleKeys(evt) {
 			player.state = 'choose direction';
 			message('choose a direction');
 			//player.state = 'shooting';
-		} else if(find(keys,84) && teleport.enoughMana()){ //t
+		} else if(find(keys,72) && hex.enoughMana()){ //h
+			player.spell = hex;
+			player.state = 'choose direction';
+			message('choose a direction');
+			//player.state = 'shooting';
+		}else if(find(keys,84) && teleport.enoughMana()){ //t
 			player.spell = teleport;
 			player.state = 'shooting';
 		} else if(find(keys,77)){

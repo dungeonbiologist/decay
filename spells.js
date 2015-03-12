@@ -19,7 +19,9 @@ function drain(x,y,z,amount,range){
 	for(var i=0; i<=range; i++){
 		remainder = drainTiles(map[z], tiles[i], remainder, z);
 	}
-	message('you drain '+(amount - remainder)+' mana', yellow);
+	if(player.place.same({x:x,y:y})){
+		message('you drain '+(amount - remainder)+' mana', yellow);
+	}
 	return amount - remainder;
 }
 
@@ -164,11 +166,52 @@ teleport = {
 			return;
 		}
 		drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
-		drain(ended.x,ended.y,ended.z,orgin.distance(ended)*this.cost,this.range);
 		player.dirSelected = player.place.diff(ended);
 		move();
+		drain(ended.x,ended.y,ended.z,orgin.distance(ended)*this.cost,this.range);
 	}
 };
-/*
 
-*/
+hex = {
+	name: intern('hex'),
+	range: 1,
+	level: 0,
+	mana: 10,
+	cost:1,
+	damage:10,
+	explain : '',
+	enoughMana: function(){
+		var mana = player.mana(this.range);
+		if(mana<this.mana){
+			message('you do not have enough  mana to cast '+interned[this.name]);
+			return false;
+		}
+		return true;
+	},
+	activate : function(orgin, direction){
+		var target = orgin.add(direction).mobilesAt();
+		if(target.length == 0){
+			message('There is no target there.',red);
+			return false;
+		}
+		target = target[0];
+		var self = this;
+		var z = player.place.z;
+		var damage = this.damage;
+		var action = function(){
+			var drained = drain(target.place.x,target.place.y,z,self.cost,1);
+			if(target.health > 0 && damage > 0 && drained >=1){
+				message('Hex drains '+drained+' mana.',yellow);
+				var dealtDamage = target.attacked(target.place,player,1);
+				damage--;
+				message('Hex drains '+dealtDamage+' health from the '+interned[target.name]+'.',yellow);
+				map[z].actionlist.add(map.turnNumber-0.1,action);
+				animate(target.place.x,target.place.y,[[[randomElt(terrainTiles.sparkles)]]]);
+			} else {
+				message('The hex fades away.',magenta);
+			}
+		};
+		map[player.place.z].actionlist.add(map.turnNumber,action);
+		drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
+	}
+};

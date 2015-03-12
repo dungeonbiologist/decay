@@ -29,16 +29,21 @@ function drawCritter(tile,priority) {
 	};
 }
  var tileData = {
- 	magic:{
- 		foreground: [magenta,red],
+	sparkles:{
+		foreground: [magenta,darkMagenta],
+		background: [black],
+		character: [15,42]
+	},
+	magic:{
+		foreground: [magenta],
 		background: [black],
 		character: [4]
- 	},
- 	smoke:{
- 		foreground: [white,grey,darkGrey],
+	},
+	smoke:{
+		foreground: [white,grey,darkGrey],
 		background: [black],
 		character: [35]
- 	},
+	},
 	blank: {
 		foreground: [white],
 		background: [black],
