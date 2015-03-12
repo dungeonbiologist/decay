@@ -17,20 +17,13 @@ function initPlayer(){
 			return Math.floor(Math.pow(this.xp,1/3));
 		},
 		mana:function(range){
-			var r = range;
-			var m = map[player.place.z].magic;
-			var x = player.place.x;
-			var y = player.place.y;
 			var mana = 0;
-			for(var i= -r; i<=r; i++){
-				for(var j= -r; j<=r; j++){
-					if(x+i>=0 && x+i < map[player.place.z].width && 
-						y+j>=0 && y+j < map[player.place.z].height && 
-						Math.abs(i)+Math.abs(j) <=range){
-						mana+=m[x+i][y+j];
-					}
-				}
-			}
+			var m = map[player.place.z];
+			diamond(player.place.x,player.place.y,range,function(x,y){ 
+				if(m.legal(x,y))
+					mana += m.magic[x][y]; 
+			
+			});
 			return mana;
 		},
 		buffedStrength: function(){
@@ -83,15 +76,15 @@ function initPlayer(){
 			this.drawSelf(context);
 		},
 		popup: false,
-		attack: function(critters,point,melee,amountofdamage){
-			for(var i=0; i<critters.length; i++){
+		attack: function(creatures,point,melee,amountofdamage){
+			for(var i=0; i<creatures.length; i++){
 				if(melee){
-					var damage = fingerOfDeath.activate(player.place,critters[i],point);
-					message('you strike the '+interned[critters[i].name]+' for '+damage+' damage',yellow);
+					var damage = fingerOfDeath.activate(player.place,creatures[i],point);
+					message('you strike the '+interned[creatures[i].name]+' for '+damage+' damage',yellow);
 				}
 				else{
-					var damage = critters[i].attacked(point, this, amountofdamage, !melee);
-					message('you attack the '+interned[critters[i].name]+' for '+damage+' damage',yellow);
+					var damage = creatures[i].attacked(point, this, amountofdamage, !melee);
+					message('you attack the '+interned[creatures[i].name]+' for '+damage+' damage',yellow);
 				}
 			}
 		},
@@ -208,10 +201,10 @@ function move(){
 			pickUp(player.place.itemsAt());
 			tick();
 		} else{
-			var critters = player.place.add(dir).mobilesAt();
-			if( critters.length > 0){
+			var creatures = player.place.add(dir).mobilesAt();
+			if( creatures.length > 0){
 				map[player.place.z].actionlist.add(map.turnNumber-0.5,function(){ 
-					player.attack(critters, player.place.add(dir), true); 
+					player.attack(creatures, player.place.add(dir), true); 
 				});
 				tick();
 			} else {
@@ -394,15 +387,15 @@ function fireSpell(e){
 }
 function examine(point) {
 	var z = point.z;
-	var critters = point.mobilesAt();
+	var creatures = point.mobilesAt();
 	var items = point.itemsAt().concat( point.trapsAt() );
 	var text = [];
 	text[0] = interned[ point.terrainAt().name ];
-	for (var i = 0; i < critters.length; i++) {
-		text.push(critters[i].explain);
-		text.push('this '+interned[critters[i].name]+' has '+critters[i].health+' hitpoints, '+
-			'and can hit for '+critters[i].damage+' damage. '+
-			'It is worth '+critters[i].xp+' experience points');
+	for (var i = 0; i < creatures.length; i++) {
+		text.push(creatures[i].explain);
+		text.push('this '+interned[creatures[i].name]+' has '+creatures[i].health+' hitpoints, '+
+			'and can hit for '+creatures[i].damage+' damage. '+
+			'It is worth '+creatures[i].xp+' experience points');
 	}
 	for (var i = 0; i < items.length; i++) {
 		text.push(items[i].explain);

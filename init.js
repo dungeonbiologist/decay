@@ -72,6 +72,7 @@ function tick(){
 		}
 	}
 	map[p.z].actionlist.tick(map.turnNumber);
+	//animation={running:false};
 }
 function init() {
 	if (window.Event) {

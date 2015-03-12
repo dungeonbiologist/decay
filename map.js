@@ -170,10 +170,10 @@ function makemap(width,height) {
 				return false; 
 			}
 			var max = 0;
-			var critters = this.mobiles.at(point);
-			for(var i=0; i<critters.length; i++){
-				if(critters[i] != thing){
-					max = Math.max( max, critters[i].size );
+			var creatures = this.mobiles.at(point);
+			for(var i=0; i<creatures.length; i++){
+				if(creatures[i] != thing){
+					max = Math.max( max, creatures[i].size );
 				}
 			}
 			return max + thing.size < 4;

@@ -17,13 +17,12 @@ var mouse = {
 function mouseToGrid() {
 	return map[player.place.z].newPoint(
 		Math.floor((mouse.x - 8) / tileWidth - hudWidth),
-		Math.floor((mouse.y - 8) / tileHeight)
-	);
+		Math.floor((mouse.y - 8) / tileHeight));
 }
 function gridToMouse(x,y){
 	return {
 		x:(hudWidth+x)*tileWidth,
-		y:y*tileHeight,
+		y:y*tileHeight
 	};
 }
 var textbox;
@@ -57,8 +56,8 @@ function showHealth(context){
 	var toNextLevel =  (Math.pow(player.level()+1,3)-Math.pow(player.level(),3));
 	context.fillRect(tileWidth, place1++ * tileHeight, 8 * tileWidth * currentXP/toNextLevel, tileHeight);
 	var mana1 = tileWidth*player.mana(1)/(4*(5)/2); //mana/(max mana in a tile * tiles in that range /how wide the bar is)
-	var mana2 = tileWidth*(player.mana(2)-player.mana(1))/(4*(9)/3);
-	var mana3 = tileWidth*(player.mana(3)-player.mana(2))/(4*(12)/3);
+	var mana2 = tileWidth*(player.mana(2)-player.mana(1))/(4*(4)/3);
+	var mana3 = tileWidth*(player.mana(3)-player.mana(2))/(4*(4)/3);
 	context.fillStyle = color[cyan];
 	context.fillRect(tileWidth, place1 * tileHeight,  mana1, tileHeight);
 	context.fillStyle = color[blue];
@@ -82,10 +81,39 @@ function showHealth(context){
 	context.fillText('Health: '+player.buffedHealth() + ' / '+ player.maxHealth, 2 * tileWidth, place++ * tileHeight);
 	place++;
 	context.fillText(currentTime(), 2 * tileWidth, place++ * tileHeight);
-	return place
+	return place;
 }
 function examineHud(coord){
-
+	if(coord.x <10){
+		if(coord.y === 0){
+			return 'At higher levels you get more health and learn new spells.';
+		} else if(coord.y == 1){
+			return 'You have '+(player.xp-Math.pow(player.level(),3))+' out of '+(Math.pow(player.level()+1,3)-Math.pow(player.level(),3))+' needed to gain a level.';
+		} else if(coord.y == 2){
+			if(coord.x+hudWidth <5){
+				drawDiamond(1);
+				return 'this is the mana you can drain from closest to you';
+			} else if(coord.x+hudWidth <8){
+				drawDiamond(2);
+				return 'this is the mana you can drain from slightly furthur away';
+			} else {
+				drawDiamond(3);
+				return 'this is the most distant mana availible to you';
+			}
+		} else if(coord.y == 3){
+			return 'you have '+player.buffedHealth()+' health out of a maximum of '+player.maxHealth+'.';
+		}
+	}
+	return '';
+}
+function drawDiamond(r){
+	var canvas = document.getElementById("canvas");
+	var context = canvas.getContext('2d');
+	diamond(player.place.x,player.place.y,r,function(x,y){
+		if(map[player.place.z].legal(x,y)){
+			context.drawImage(terrainTiles.magic[0], (hudWidth + x) * tileWidth, y * tileHeight);
+		}
+	});
 }
 function showStatuses(context,place){
 	/*place++;
@@ -144,7 +172,7 @@ function examinationMessagebox(context){
 		}
 	}
 	else {
-		examineHud(coord);
+		printToTextbox(examineHud(coord), context);
 	}
 }
 function draw() {
@@ -154,7 +182,7 @@ function draw() {
 	//var canvas = document.createElement('canvas');
 	//canvas.width = canvas2.width;
 	//canvas.height = canvas2.height;
-	var context = canvas.getContext('2d')
+	var context = canvas.getContext('2d');
 	context.fillStyle = color[black];
 	context.fillRect(0,0,canvas.width,canvas.height);
 	
@@ -166,8 +194,8 @@ function draw() {
 	} else {
 		var level = map[player.place.z];
 		messagebox.resize(10,level.height+7,7,level.width);
-		var a = map[player.place.z]
-		var b = a.seen
+		var a = map[player.place.z];
+		var b = a.seen;
 		b.forall(function (tile, x, y) {
 			context.drawImage(tile, (hudWidth + x) * tileWidth, y * tileHeight);
 		});
@@ -187,7 +215,7 @@ function draw() {
 				}
 			);
 		}
-		context.drawImage(terrainTiles.highlight[0], (hudWidth + m.x) * tileWidth, m.y * tileHeight)
+		context.drawImage(terrainTiles.highlight[0], (hudWidth + m.x) * tileWidth, m.y * tileHeight);
 		
 		var place = showHealth(context);
 		showStatuses(context,place);

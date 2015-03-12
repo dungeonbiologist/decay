@@ -1,3 +1,15 @@
+function diamond(x,y,range,fn){
+	var tiles = [/*[[x,y]],*/
+		[[x-1,y],[x+1,y],[x,y-1],[x,y+1]],
+		[[x-1,y-1],[x+1,y+1],[x+1,y-1],[x-1,y+1]],
+		[[x-2,y],[x+2,y],[x,y-2],[x,y+2]]];
+	for(var i=0; i<range; i++){
+		for(var j=0; j<tiles[i].length; j++){
+			fn(tiles[i][j][0],tiles[i][j][1]);
+		}
+	}
+}
+
 function drain(x,y,z,amount,range){
 	var remainder = amount;
 	var tiles = [[[x,y]],
@@ -100,15 +112,15 @@ fireCone = {
 		for(var i=0; i<points.length; i++){
 			var cntn= true;
 			for(var j=0; j<points[i].length; j++){
-				critters = points[i][j].mobilesAt();
+				var creatures = points[i][j].mobilesAt();
 				cntn = cntn && points[i][j].terrainAt().flyable;
-				if(critters.length>0){
+				if(creatures.length>0){
 					cntn  = false;
-					(function(point){
+					(function(creatures, point){
 						map[player.place.z].actionlist.add(map.turnNumber-1.5,function(){ 
-							player.attack(critters,point,false,self.damage);
+							player.attack(creatures,point,false,self.damage);
 						});
-					})(points[i][j]);
+					})(creatures, points[i][j]);
 				}
 			}
 			if(!cntn){
@@ -140,8 +152,8 @@ teleport = {
 		var ended = orgin;
 		line(orgin.x,orgin.y, target.x,target.y, 
 		function(x,y){
-			critters = map[player.place.z].newPoint(x,y).mobilesAt();
-			if(critters.length>0){
+			var creatures = map[player.place.z].newPoint(x,y).mobilesAt();
+			if(creatures.length>0){
 				return false;
 			}
 			ended = map[player.place.z].newPoint(x,y);

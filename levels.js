@@ -194,7 +194,7 @@ function testLevel(level,depth){
 	for(var i=0; i<12; i++){
 		placeMagic(randomInt(0,level.width-1),randomInt(0,level.width-1),randomInt(10,19),level,randomInt(1,6));
 	}
-	for(var i=0; i<6; i++){
+	for(var i=0; i<1; i++){
 		var room = randomElt(rooms);
 		biome.fairyRing.init(room,level,depth);
 	}

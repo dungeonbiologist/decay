@@ -30,7 +30,7 @@ function runAnimation(){
 		(animation.x+hudWidth)*tileWidth, animation.y*tileHeight, animation.canvas.width, animation.canvas.height);
 	//what we have here is the interesting situation of manually coordinating this function with its arguments
 	//and then manually looping
-	if(animation.frame == animation.frames.length){
+	if(! (animation.frame < animation.frames.length) ){
 		animation={running:false};
 		draw();
 		return;
