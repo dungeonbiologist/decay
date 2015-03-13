@@ -40,6 +40,14 @@ function initPlants(){
 		tiles:'thorn',
 		init: initPlant
 	},
+	toadstool: {
+		name:intern('toadstool'),
+		walkable: false,
+		flyable: false,
+		destructable: true,
+		tiles:'toadstool',
+		init: initPlant
+	},
 	tree: {
 		name:intern('a tree'),
 		walkable: true,

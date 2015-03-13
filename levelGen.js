@@ -29,6 +29,35 @@ function placeTerrain(x, y, diameter, level, item, frequency){
 	}
 }
 
+function maze(x,y,radius,level,fn){
+	var scratch = [];
+	var s = 2*radius+1;
+	for(var i=0; i<s; i++){
+		scratch[i] = [];
+		for(var j=0; j<s; j++){
+			scratch[i][j] = randomInt(0,1);
+		}
+	}
+	for(var k=0; k<5; k++){
+		for(var i=0; i<s; i++){
+			for(var j=0; j<s; j++){
+				if(scratch[i][(j+1)%s]+scratch[i][(j-1+s)%s] + scratch[(i+1)%s][j]+scratch[(i-1+s)%s][j] <=2){
+					scratch[i][j] = 1;
+				} else {
+					scratch[i][j] = 0;
+				}
+			}
+		}
+	}
+	for(var i=0; i<s; i++){
+		for(var j=0; j<s; j++){
+			var point = level.newPoint(x+i-radius,y+j-radius);
+			if(scratch[i][j]==1 && point.unBlocked({size:3}) ){
+				fn(point);
+			}
+		}
+	}
+}
 function placeRing(x,y,radius/* faked for now*/,level,fn){
 	if(radius==1){
 		var points = [[-1,-1],[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0]];

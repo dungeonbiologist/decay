@@ -100,6 +100,9 @@ Point.prototype = {
 		}
 		this.move(x,y,critter);
 	},
+	unBlocked: function(thing){
+		return map[this.z].unBlocked(this,thing);
+	},
 	move: function (x,y,z, critter){
 		if(z>=0 && z<map.length && map[this.z].legal(x,y) ){
 			if(this.z !== z){
@@ -154,12 +157,18 @@ Point.prototype = {
 	plantsAt: function(){
 		return map[this.z].plants[this.x][this.y];
 	},
+	setPlants: function(newPlant){
+		map[this.z].plants[this.x][this.y] = newPlant;
+	},
 	manaAt: function(){
 		if(!map[this.z].guarded[this.x][this.y]){
 			return map[this.z].magic[this.x][this.y];
 		}
 		return 0;
 	},
+	setMana: function(amount){
+		map[this.z].magic[this.x][this.y] = amount;
+	}
 	terrainSet: function(newTerrain){
 		map[this.z].terrain[this.x][this.y] = newTerrain;
 	}
@@ -179,11 +188,11 @@ function makemap(width,height) {
 		},
 		unBlocked: function (point, thing) {
 			var p = this.plants[point.x][point.y];
-			if(!(  this.legal(point.x,point.y) && 
-				(((!p || p.walkable) && this.terrain[point.x][point.y].walkable)  || 
-					((!p || p.swimable) && this.terrain[point.x][point.y].swimmable && thing.swimmer) || 
-					((!p || p.flyable) && this.terrain[point.x][point.y].flyable && thing.flier) ||
-					(p && thing.climber)))){ 
+			var walkable = ((!p || p.walkable) && this.terrain[point.x][point.y].walkable) ;
+			var swimable = ((!p || p.swimable) && this.terrain[point.x][point.y].swimmable && thing.swimmer);
+			var flyable = ((!p || p.flyable) && this.terrain[point.x][point.y].flyable && thing.flier);
+			var climable = (p && thing.climber);
+			if(!(  this.legal(point.x,point.y) && (walkable || swimable || flyable || climable))){ 
 				return false; 
 			}
 			var max = 0;

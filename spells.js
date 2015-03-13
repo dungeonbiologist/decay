@@ -87,6 +87,9 @@ fireCone = {
 	level: 0,
 	mana: 10,
 	damage:10,
+	flier:true,
+	climber:true, //to go through bushes
+	size:3,
 	explain:'Cone of Fire costs 30 mana and does 10 damage to each enemy it hits',
 	enoughMana: function(){
 		var mana = player.mana(this.range);
@@ -118,14 +121,16 @@ fireCone = {
 			var cntn= true;
 			for(var j=0; j<points[i].length; j++){
 				var creatures = points[i][j].mobilesAt();
-				cntn = cntn && points[i][j].terrainAt().flyable;
+				cntn = cntn && points[i][j].unBlocked(this);
+				if(points[i][j].plantsAt().destructable){
+					points[i][j].setPlants(false);
+				}
 				if(creatures.length>0){
-					cntn  = false;
 					(function(creatures, point){
 						map[player.place.z].actionlist.add(map.turnNumber-0.5,function(){ 
 							player.attack(creatures,point,false,self.damage);
 						});
-					})(creatures, points[i][j]);
+					})(creatures, points[i][j]); //both of these variables are changed in later iterations, so I need to close over the values
 				}
 			}
 			if(!cntn){
@@ -144,7 +149,7 @@ teleport = {
 	mana: 10,
 	cost:1,
 	flier:true,
-	size:0,
+	size:3,
 	explain : 'Teleport moves you in a strait line until you hit an obstacle. It costs 20 mana, and uses additional mana proportional to the distance.',
 	enoughMana: function(){
 		var mana = player.mana(this.range);
@@ -236,6 +241,9 @@ fortify = {
 		return true;
 	},
 	activate: function(place){
-		diamond(place.x,place.y,2,function(x,y){map[player.place.z].plants[x][y]=plants.thornbush.init();});
+		maze(place.x, place.y, 2, map[player.place.z], function(point){ if(!point.plantsAt() || !points.plantsAt().name == plants.sapling.name) 
+			point.setPlant(plants.thornbush.init());
+			point.setMana(0);
+		});
 	}
 };

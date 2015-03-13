@@ -29,6 +29,11 @@ function drawCritter(tile,priority) {
 	};
 }
  var tileData = {
+	toadstool:{
+		foreground: [darkRed,darkMagenta],
+		background: [black],
+		character: [6]
+	},
 	sapling:{
 		foreground: [green],
 		background: [darkGreen],

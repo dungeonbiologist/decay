@@ -20,9 +20,9 @@ function initPlayer(){
 			var mana = 0;
 			var m = map[player.place.z];
 			diamond(player.place.x,player.place.y,range,function(x,y){ 
-				if(m.legal(x,y))
+				if(m.legal(x,y)){
 					mana += m.newPoint(x,y).manaAt(); 
-			
+				}
 			});
 			return mana;
 		},
@@ -150,7 +150,7 @@ function onlyPressed(){
 		}
 	}
 	return arguments.length == keys.length;
-};
+}
 function getDirection(keys) {
 	var dx = 0;
 	var dy = 0;
@@ -193,6 +193,7 @@ function dropItem(){
 }
 function move(){
 	var dir = player.dirSelected;
+	var plant = player.place.add(dir).plantsAt();
 	var x = player.place.x;
 	var y = player.place.y;
 	if ( map[player.place.z].legal(x + dir.x, y + dir.y)) {
@@ -207,6 +208,9 @@ function move(){
 					player.attack(creatures, player.place.add(dir), true); 
 				});
 				tick();
+			} else if(plant && plant.destructable){
+				player.place.add(dir).setPlants(false);
+				message('You chop down the '+interned[plant.name]+'.', yellow);
 			} else {
 				message('that way is blocked');
 			}
@@ -294,7 +298,7 @@ function handleKeys(evt) {
 			player.state = 'choose direction';
 			message('choose a direction');
 			//player.state = 'shooting';
-		} else if(find(keys,68) && fortify.enoughMana()){ //d
+		} else if(find(keys,83) && fortify.enoughMana()){ //s
 			fortify.activate(player.place);
 			move();
 		}else if(find(keys,84) && teleport.enoughMana()){ //t
@@ -355,7 +359,7 @@ function handleKeys(evt) {
 		}
 		player.state = 'moveing';
 	}
-	var p = player.place
+	var p = player.place;
 	for(var i=0; i<player.inventory.length; i++){
 		if(player.inventory[i]){
 			player.inventory[i].place.move(p.x, p.y, p.z, player.inventory[i]);
