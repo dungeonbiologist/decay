@@ -15,6 +15,7 @@ function testLevel(level,depth){
 				level.plants[x][y] = plants.vegetation.init(); 
 				}
 		});
+		plants.sapling.init( randomInt(0,level.width-1), randomInt(0,level.width-1), depth);
 	}
 	for(var i=0; i<1; i++){
 		var room = randomElt(rooms);

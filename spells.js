@@ -11,11 +11,12 @@ function diamond(x,y,range,fn){
 }
 
 function drain(x,y,z,amount,range){
+	var l = map[z];
 	var remainder = amount;
-	var tiles = [[[x,y]],
-		[[x-1,y],[x+1,y],[x,y-1],[x,y+1]],
-		[[x-1,y-1],[x+1,y+1],[x+1,y-1],[x-1,y+1]],
-		[[x-2,y],[x+2,y],[x,y-2],[x,y+2]]];
+	var tiles = [[l.newPoint(x,y)],
+		[l.newPoint(x-1,y),l.newPoint(x+1,y),l.newPoint(x,y-1),l.newPoint(x,y+1)],
+		[l.newPoint(x-1,y-1),l.newPoint(x+1,y+1),l.newPoint(x+1,y-1),l.newPoint(x-1,y+1)],
+		[l.newPoint(x-2,y),l.newPoint(x+2,y),l.newPoint(x,y-2),l.newPoint(x,y+2)]];
 	for(var i=0; i<=range; i++){
 		remainder = drainTiles(map[z], tiles[i], remainder, z);
 	}
@@ -30,26 +31,28 @@ function drainTiles(level, tiles, amount){
 	shuffle(tiles);
 	var neighbors = [];
 	for(var i=0; i<tiles.length;i++){
-		if(level.legal(tiles[i][0],tiles[i][1])){
+		if(tiles[i].legal()){
 			neighbors.push(tiles[i]);
 		}
 	}
 	var total = 0;
 	for(var i=0; i<neighbors.length; i++){
-		total+=level.magic[neighbors[i][0]][neighbors[i][1]];
+		total+=neighbors[i].manaAt();
 	}
 	drainable = Math.min(amount, total);
 	amount-=drainable;
 	for(var i=0; drainable>0 && i<100; i++){
-		neighbors.sort(function(a,b){return level.magic[b[0]][b[1]] - level.magic[a[0]][a[1]];});
+		neighbors.sort(function(a,b){return b.manaAt() - a.manaAt();});
 		var a = neighbors[0];
-		if(level.magic[a[0]][a[1]] > 0){
+		if(a.manaAt() > 0){
 			drainable--;
-			level.magic[a[0]][a[1]]--;
+			level.magic[a.x][a.y]--;
 		}
 	}
 	for(var i=0; i<neighbors.length; i++){
-		level.plants[neighbors[i][0]][neighbors[i][1]].update( neighbors[i][0], neighbors[i][1], z);
+		if(neighbors[i].plantsAt()){
+			neighbors[i].plantsAt().update( neighbors[i].x, neighbors[i].y, z);
+		}
 	}
 	return amount;
 }
@@ -119,7 +122,7 @@ fireCone = {
 				if(creatures.length>0){
 					cntn  = false;
 					(function(creatures, point){
-						map[player.place.z].actionlist.add(map.turnNumber-1.5,function(){ 
+						map[player.place.z].actionlist.add(map.turnNumber-0.5,function(){ 
 							player.attack(creatures,point,false,self.damage);
 						});
 					})(creatures, points[i][j]);
@@ -130,8 +133,8 @@ fireCone = {
 			}
 		}
 		
-		animate(orgin.x+3*direction.x-2, orgin.y+3*direction.y-2,
-			mapcar(animations.coneOfFire.slice(0,i+1), function(a){return rotate(angle, a);} ) );
+		//animate(orgin.x+3*direction.x-2, orgin.y+3*direction.y-2,
+		//	mapcar(animations.coneOfFire.slice(0,i+1), function(a){return rotate(angle, a);} ) );
 	}
 };
 teleport = {
@@ -140,6 +143,8 @@ teleport = {
 	level: 0,
 	mana: 10,
 	cost:1,
+	flier:true,
+	size:0,
 	explain : 'Teleport moves you in a strait line until you hit an obstacle. It costs 20 mana, and uses additional mana proportional to the distance.',
 	enoughMana: function(){
 		var mana = player.mana(this.range);
@@ -151,15 +156,13 @@ teleport = {
 	},
 	activate : function(orgin, target){
 		var self = this;
-		var ended = orgin;
+		var next = orgin;
+		var ended = next;
 		line(orgin.x,orgin.y, target.x,target.y, 
 		function(x,y){
-			var creatures = map[player.place.z].newPoint(x,y).mobilesAt();
-			if(creatures.length>0){
-				return false;
-			}
-			ended = map[player.place.z].newPoint(x,y);
-			return map[player.place.z].terrain[x][y].flyable;
+			ended = next;
+			next = map[player.place.z].newPoint(x,y);
+			return map[player.place.z].unBlocked(next,self);
 		});
 		if(orgin.same(ended)){
 			message('teleport failed', yellow);
@@ -233,6 +236,6 @@ fortify = {
 		return true;
 	},
 	activate: function(place){
-		diamond(place.x,place.y,2,function(x,y){map[player.place.z].terrain[x][y]=terrains.thornbush.init();});
+		diamond(place.x,place.y,2,function(x,y){map[player.place.z].plants[x][y]=plants.thornbush.init();});
 	}
 };

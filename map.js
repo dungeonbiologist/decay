@@ -136,6 +136,9 @@ Point.prototype = {
 		}
 		return list;
 	},
+	legal: function(){
+		return map[this.z].legal(this.x, this.y);
+	},
 	mobilesAt: function(){
 		return map[this.z].mobiles.at(this);
 	},
@@ -152,7 +155,10 @@ Point.prototype = {
 		return map[this.z].plants[this.x][this.y];
 	},
 	manaAt: function(){
-		return map[this.z].magic[this.x][this.y];
+		if(!map[this.z].guarded[this.x][this.y]){
+			return map[this.z].magic[this.x][this.y];
+		}
+		return 0;
 	},
 	terrainSet: function(newTerrain){
 		map[this.z].terrain[this.x][this.y] = newTerrain;
@@ -172,7 +178,12 @@ function makemap(width,height) {
 			return new Point(x,y,this.depth);
 		},
 		unBlocked: function (point, thing) {
-			if(!(  this.legal(point.x,point.y) && (this.terrain[point.x][point.y].walkable  || (this.terrain[point.x][point.y].swimmable && thing.swimmer) || (this.terrain[point.x][point.y].flyable && thing.flier))  )){ 
+			var p = this.plants[point.x][point.y];
+			if(!(  this.legal(point.x,point.y) && 
+				(((!p || p.walkable) && this.terrain[point.x][point.y].walkable)  || 
+					((!p || p.swimable) && this.terrain[point.x][point.y].swimmable && thing.swimmer) || 
+					((!p || p.flyable) && this.terrain[point.x][point.y].flyable && thing.flier) ||
+					(p && thing.climber)))){ 
 				return false; 
 			}
 			var max = 0;
@@ -200,13 +211,16 @@ function makemap(width,height) {
 		seen: makeArray(width, height, function() {
 			return terrainTiles.blank[0]; //set all the tiles to black to start with
 		}),
+		guarded: makeArray(width, height, function() {
+			return false;
+		}),
 		actionlist:[]
 	};
 	m.actionlist.tick = function(turn){
 		this.sort(function(a,b){return a.turn-b.turn;});
 		while(this.length>0){
 			var a = this.shift();
-			if(a.turn >= turn){
+			if(a.turn > turn){
 				this.push(a);
 				break;
 			}

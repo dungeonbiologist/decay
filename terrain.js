@@ -127,7 +127,7 @@ function initPlants(){
 			var t = Object.create(this);
 			t.tile = randomElt(terrainTiles[t.tiles[0]])
 			if(!t.priority){
-				t.priority = 0;
+				t.priority = 1;
 			}
 			t.draw = variableDraw;
 			return t;
@@ -141,6 +141,19 @@ function initPlants(){
 		init: function(x,y,z){
 			var t = initPlant.call(this);
 			map[z].plants[x][y]=t;
+			var tick = function(){
+				if(map[z].plants[x][y]===t){
+					for(var i=x-2; i<x+3; i++){
+						for(var j=y-2; j<y+3; j++){
+							if(map[z].legal(i,j)){
+								map[z].guarded[i][j] = true;
+							}
+						}
+					}
+					map[z].actionlist.add(map.turnNumber-0.75,tick);
+				}
+			}
+			tick();
 			return t;
 		}
 	},
@@ -158,7 +171,7 @@ function initPlants(){
 		init: function(x,y,z){
 			var t = initPlant.call(this);
 			map[z].actionlist.add(map.turnNumber+Math.floor(5*Math.random()),function(){
-				map[z].terrain[x][y] = t; //delayed appearence
+				map[z].plants[x][y] = t; //delayed appearence
 				var a =[[x+1,y],[x-1,y],[x,y+1],[x,y-1]];
 				for(var i=0; i<4; i++){
 					if(map[z].legal(a[i][0],a[i][1]) && map[z].magic[a[i][0]][a[i][1]]>0 && 

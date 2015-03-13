@@ -29,7 +29,12 @@ function drawCritter(tile,priority) {
 	};
 }
  var tileData = {
- 	thorn:{
+	sapling:{
+		foreground: [green],
+		background: [darkGreen],
+		character: [231]
+	},
+	thorn:{
 		foreground: [red,darkRed],
 		background: [black],
 		character: [37]

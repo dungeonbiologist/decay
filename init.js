@@ -71,10 +71,12 @@ function tick(){
 			acend()
 		}
 	}
-	map[p.z].actionlist.tick(map.turnNumber);
-	//animation={running:false};
+	level = map[p.z];
+	level.guarded.forall(function(t,x,y){level.guarded[x][y]=false;});
+	level.actionlist.tick(map.turnNumber-1);
 }
 function init() {
+	display = {screenNumber:0,previous:0};
 	if (window.Event) {
 		document.captureEvents(Event.MOUSEMOVE);
 		document.captureEvents(Event.MOUSEDOWN);
@@ -105,6 +107,7 @@ function init() {
 	reInit();
 }
 function reInit(){
+	display = {screenNumber:0,previous:0};
 	messageLog = [];
 	var canvas = document.getElementById("canvas");
 	for(var i=0; i<canvas.width/tileWidth; i++){

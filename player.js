@@ -21,7 +21,7 @@ function initPlayer(){
 			var m = map[player.place.z];
 			diamond(player.place.x,player.place.y,range,function(x,y){ 
 				if(m.legal(x,y))
-					mana += m.magic[x][y]; 
+					mana += m.newPoint(x,y).manaAt(); 
 			
 			});
 			return mana;
@@ -283,7 +283,7 @@ function handleKeys(evt) {
 			player.state = 'inventory';
 		} else if(find(keys,68) || find(keys,190)){ //d
 			//player.dropping = true;
-			drain( player.place.x, player.place.y, player.place.z, 12 );
+			drain( player.place.x, player.place.y, player.place.z, 12, 3 );
 		} else if(find(keys,70) && fireCone.enoughMana()){ //f
 			player.spell = fireCone;
 			player.state = 'choose direction';
@@ -294,7 +294,7 @@ function handleKeys(evt) {
 			player.state = 'choose direction';
 			message('choose a direction');
 			//player.state = 'shooting';
-		} else if(find(keys,66) && fortify.enoughMana()){ //b
+		} else if(find(keys,68) && fortify.enoughMana()){ //d
 			fortify.activate(player.place);
 			move();
 		}else if(find(keys,84) && teleport.enoughMana()){ //t

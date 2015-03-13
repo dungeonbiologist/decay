@@ -6,7 +6,7 @@ function initCritters(){
 			maxHealth: 10,
 			speed: 1,
 			damage:10,
-			xp:400,
+			xp:100,
 			drop: item.unicornHorn,
 			tiles: [tile(white,black,151)],
 			explain: 'The vicious unicorn is a merciless beast.  They gain powers by sacrificing innocent vigin wizards to their vile deities.'
@@ -16,7 +16,7 @@ function initCritters(){
 			maxHealth: 10,
 			speed: 1,
 			damage:10,
-			xp:400,
+			xp:10,
 			tiles: [tile(darkYellow,black,100)],
 			explain: 'Dryads plant saplings that protect the surrounding vegetation from your mana drain. Kill the dryad to remove the sapling.'
 		},
@@ -26,7 +26,7 @@ function initCritters(){
 			speed: 1,
 			flutters:true,
 			damage:10,
-			xp:400,
+			xp:10,
 			tiles: [tile(cyan,black,112)],
 			explain: 'pixie'
 		},
@@ -36,7 +36,7 @@ function initCritters(){
 			speed: 1.5,
 			damage:1,
 			hostile:true,
-			xp:20,
+			xp:50,
 			tiles: [tile(yellow,black,102)],
 			explain: 'Fairies love fresh flowers and the laughter of children.',
 			wakeup:function(silent){

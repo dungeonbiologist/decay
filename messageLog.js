@@ -1,18 +1,19 @@
+var display = display = {screenNumber:0,previous:0};
 var messageLog = [];
 function message(strng,color){
-	if(!messageLog[map.turnNumber]){
-		messageLog[map.turnNumber] = [];
+	if(!messageLog[display.screenNumber]){
+		messageLog[display.screenNumber] = [];
 	}
-	messageLog[map.turnNumber].push({msg:strng, seen:false, color: color || white});
+	messageLog[display.screenNumber].push({msg:strng, seen:false, color: color || white});
 }
 var messagebox = {
 	draw: function(context){
 		context.fillStyle = color[black];
 		context.fillRect(this.x*tileWidth, this.y*tileHeight, this.width*tileWidth, this.height * tileHeight);
 		context.fillStyle = color[white];
-		if(this.lastturn !== map.turnNumber){
+		if(this.lastturn !== display.screenNumber){
 			this.offset = 0;
-			this.lastturn = map.turnNumber;
+			this.lastturn = display.screenNumber;
 		}
 		this.fillLines();
 		this.printlines(context);
@@ -47,10 +48,10 @@ var messagebox = {
 		this.lineColor = [];
 		var filledlines=0;
 		this.pages = 0;
-		if(messageLog[map.turnNumber]){
-			this.fill(messageLog[map.turnNumber], this.lines);
-		} else if(messageLog[map.turnNumber-1]){
-			this.fill(messageLog[map.turnNumber-1], this.lines);
+		if(messageLog[display.screenNumber]){
+			this.fill(messageLog[display.screenNumber], this.lines);
+		} else if(messageLog[display.screenNumber-1]){
+			this.fill(messageLog[display.screenNumber-1], this.lines);
 		}
 		
 	},

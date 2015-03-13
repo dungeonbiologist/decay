@@ -50,6 +50,7 @@ function currentTime(){
 }
 function showHealth(context){
 	var place1=1;
+	context.fillStyle = color[black];
 	context.fillRect(0, 0, hudWidth * tileWidth, 5 * tileHeight);
 	context.fillStyle = color[darkGreen];
 	var currentXP = (player.xp-Math.pow(player.level(),3));
@@ -84,11 +85,11 @@ function showHealth(context){
 	return place;
 }
 function examineHud(coord){
-	if(coord.x <10){
+	if(coord.x+hudWidth <10){
 		if(coord.y === 0){
 			return 'At higher levels you get more health and learn new spells.';
 		} else if(coord.y == 1){
-			return 'You have '+(player.xp-Math.pow(player.level(),3))+' out of '+(Math.pow(player.level()+1,3)-Math.pow(player.level(),3))+' needed to gain a level.';
+			return 'You have '+(player.xp-Math.pow(player.level(),3))+' out of '+(Math.pow(player.level()+1,3)-Math.pow(player.level(),3))+' experience points needed to gain a level.';
 		} else if(coord.y == 2){
 			if(coord.x+hudWidth <5){
 				drawDiamond(1);
@@ -200,7 +201,10 @@ function examinationMessagebox(context){
 	}
 }
 function draw() {
-	if(animation.running){ return; }
+	if(animation.running){ 
+		runAnimation();
+		return; 
+	}
 	clearView();
 	var canvas = document.getElementById("canvas");
 	//var canvas = document.createElement('canvas');
@@ -225,8 +229,15 @@ function draw() {
 		});
 		 //fade out the previously seen terrain
 			context.fillStyle = 'rgba(0,0,0,0.75)';
-			context.fillRect((hudWidth) * tileWidth, 0, map[player.place.z].width * tileWidth, map[player.place.z].height * tileHeight);
+			context.fillRect(hudWidth * tileWidth, 0, map[player.place.z].width * tileWidth, map[player.place.z].height * tileHeight);
 		visable(player.place, context);
+		//tint guarded tiles
+			context.fillStyle = 'rgba(255,255,0,0.25)';
+			map[player.place.z].guarded.forall(function (t, i, j) {
+			if(t && view[hudWidth+i][j]>=0){
+				context.fillRect((hudWidth+i) * tileWidth,j*tileHeight,tileWidth,tileHeight);
+			}
+		});
 		var m = mouseToGrid();
 		if(player.state == 'shooting'){
 			line(player.place.x,player.place.y,m.x,m.y, 
@@ -256,6 +267,10 @@ function draw() {
 		if( player.looking){
 			drawCursor(player.looking.x, player.looking.y, context);
 		}
+	}
+	if(map.turnNumber != display.previousTurn){
+		display.screenNumber++;
+		display.previousTurn = map.turnNumber;
 	}
 	//var context = canvas2.getContext('2d');
 	//context.drawImage(canvas, 0,0);

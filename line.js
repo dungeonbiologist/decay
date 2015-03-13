@@ -51,7 +51,11 @@ function visable(point,context){
 		}
 		if(plant){plant.draw(x,y,context);}
 		v.draw(x,y,context);
-		map[player.place.z].seen[x][y]= (plant)? plant.tile: v.tile; //record all terrain tiles you see
+		if(plant && plant.priority > v.priority){ 
+			map[player.place.z].seen[x][y] = plant.tile;
+		}else{
+			map[player.place.z].seen[x][y] = v.tile; //record all terrain tiles you see
+		}
 		return !v.opaque && point.distance(p) <= r;
 	};
 	fn(point.x,point.y);
