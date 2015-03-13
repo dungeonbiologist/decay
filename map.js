@@ -148,6 +148,12 @@ Point.prototype = {
 	terrainAt: function(){
 		return map[this.z].terrain[this.x][this.y];
 	},
+	plantsAt: function(){
+		return map[this.z].plants[this.x][this.y];
+	},
+	manaAt: function(){
+		return map[this.z].magic[this.x][this.y];
+	},
 	terrainSet: function(newTerrain){
 		map[this.z].terrain[this.x][this.y] = newTerrain;
 	}
@@ -187,6 +193,9 @@ function makemap(width,height) {
 		}),
 		magic: makeArray(width, height, function() {
 			return 1;
+		}),
+		plants: makeArray(width, height, function() {
+			return false;
 		}),
 		seen: makeArray(width, height, function() {
 			return terrainTiles.blank[0]; //set all the tiles to black to start with

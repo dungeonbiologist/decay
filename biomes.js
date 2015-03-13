@@ -15,7 +15,7 @@ function initializeBiomes(){
 			init:function(room,level,depth){
 				var x = randomInt(room.x1+2,room.x2-2);
 				var y = randomInt(room.y1+2,room.y2-2);
-				placeRing(x,y, randomInt(1,2), level,terrains.mushroom);
+				placeRing(x,y, randomInt(1,2), level,function(x,y){level.plants[x][y] = plants.mushroom.init();});
 				var fairy = critters.fairy.init(x,y,level);
 				var wait = function(){
 					if(player.place.distance({x:x,y:y})<5){
@@ -24,7 +24,7 @@ function initializeBiomes(){
 					else{
 						level.actionlist.add(map.turnNumber, wait);
 					}
-				}
+				};
 				level.actionlist.add(map.turnNumber, wait);
 			}
 		},

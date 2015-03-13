@@ -1,6 +1,6 @@
 function line(x,y,x2,y2,fn){
 	var length = Math.max(Math.abs(x-x2), Math.abs(y-y2));
-	if(length == 0){
+	if(length === 0){
 		fn(x,y);
 		return;
 	}
@@ -20,11 +20,12 @@ function visable(point,context){
 				a.draw(context);
 			}
 		});	
-	
-		map[player.place.z].terrain.forall(function (t, i, j) {
-			if(typeof t.draw != 'function'){
-				var c = 5;
+		map[player.place.z].plants.forall(function (t, i, j) {
+			if(t){
+				t.draw(i, j, context);
 			}
+		});
+		map[player.place.z].terrain.forall(function (t, i, j) {
 			t.draw(i, j, context);
 		});
 		map[player.place.z].items.forall(function (t) {
@@ -43,14 +44,16 @@ function visable(point,context){
 	var fn = function(x,y){
 		var p = level.newPoint(x,y);
 		var v = p.terrainAt();
+		var plant = p.plantsAt();
 		var things = p.mobilesAt().concat(p.itemsAt());
 		for(var i=0; i<things.length; i++){
 			things[i].draw(context);
 		}
+		if(plant){plant.draw(x,y,context);}
 		v.draw(x,y,context);
-		map[player.place.z].seen[x][y]=v.tile; //record all terrain tiles you see
+		map[player.place.z].seen[x][y]= (plant)? plant.tile: v.tile; //record all terrain tiles you see
 		return !v.opaque && point.distance(p) <= r;
-	}
+	};
 	fn(point.x,point.y);
 	for(var i = -r; i <= r; i++){
 		line(x,y,x+i,y-r,fn);
@@ -79,7 +82,7 @@ function astar(start,expense,success,goal, limit){
 			traversed[point.place.x][point.place.y] = point;
 			perimeter.push(point);
 		}
-	}
+	};
 	var perimeter = [];
 	register({place:start,cost:0,estimate:goal.distance(start)});
 	while(perimeter.length>0){
@@ -89,7 +92,7 @@ function astar(start,expense,success,goal, limit){
 			break;
 		}
 		if(success(p.place)){
-			var path = [];;
+			var path = [];
 			for(;p; p = p.parent){
 				path.unshift(p.place);
 			}
@@ -115,7 +118,7 @@ function pathfindRooms(start,goal, transitionCost, level, limit){
 		}
 		traversed[point.place.x1][point.place.y1] = point;
 		perimeter.push(point);
-	}
+	};
 	var perimeter = [];
 	register({place:start,cost:0});
 	while(perimeter.length>0){
@@ -125,7 +128,7 @@ function pathfindRooms(start,goal, transitionCost, level, limit){
 			break;
 		}
 		if(p.place == goal){
-			var path = [];;
+			var path = [];
 			for(;p; p = p.parent){
 				path.unshift(p.place);
 			}

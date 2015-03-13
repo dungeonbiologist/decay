@@ -162,6 +162,30 @@ function displayMessagelog(context){
 	}
 }
 
+function examine(point) {
+	var z = point.z;
+	var creatures = point.mobilesAt();
+	var items = point.itemsAt().concat( point.trapsAt() );
+	var text = [];
+	text[0] = interned[ point.terrainAt().name ];
+	var plant = point.plantsAt();
+	if(plant){
+		text[0] = text[0].concat(', '+interned[plant.name]);
+	}
+	if(point.manaAt() > 0){
+		text[0] = text[0].concat(', '+point.manaAt() +' mana');
+	}
+	for (var i = 0; i < creatures.length; i++) {
+		text.push(creatures[i].explain);
+		text.push('this '+interned[creatures[i].name]+' has '+creatures[i].health+' hitpoints, '+
+			'and can hit for '+creatures[i].damage+' damage. '+
+			'It is worth '+creatures[i].xp+' experience points');
+	}
+	for (var i = 0; i < items.length; i++) {
+		text.push(items[i].explain);
+	}
+	return text;
+}
 function examinationMessagebox(context){
 	setTextbox(hudWidth, map[player.place.z].height, map[player.place.z].width, 7, context);
 	var coord = mouseToGrid();

@@ -29,7 +29,7 @@ function placeTerrain(x, y, diameter, level, item, frequency){
 	}
 }
 
-function placeRing(x,y,radius/* faked for now*/,level,item){
+function placeRing(x,y,radius/* faked for now*/,level,fn){
 	if(radius==1){
 		var points = [[-1,-1],[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0]];
 	}
@@ -38,12 +38,12 @@ function placeRing(x,y,radius/* faked for now*/,level,item){
 	}
 	for(var i=0; i<points.length; i++){
 		if(level.legal(x+points[i][0],y+points[i][1])){
-			level.terrain[x+points[i][0]][y+points[i][1]]=item.init();
+			fn( x+points[i][0], y+points[i][1] );
 		}
 	}
 }
 
-function placeMagic(x, y, diameter, level, peak){
+function placeCircle(x, y, diameter, level, peak, fn){
 	var min = 0 - Math.floor(diameter/2);
 	var max = diameter - Math.floor(diameter/2);
 	for(var i=x + min; i<x+ max; i++){
@@ -51,7 +51,7 @@ function placeMagic(x, y, diameter, level, peak){
 			if(level.legal(i,j) && level.terrain[i][j].walkable){
 				var d = 1-2*Math.sqrt( (i-x)*(i-x) + (j-y)*(j-y) )/diameter;
 				var m = Math.floor( Math.random()+ peak*d );
-				level.magic[i][j] = Math.max( level.magic[i][j], Math.min( 4, m));
+				fn(i,j,m);
 			}
 		}
 	}
@@ -70,7 +70,7 @@ function lineBetween(room1,room2,level){
 function put(x,y,doors,level,terrain){
 	for(var j=0; j<doors.length; j++){
 		if(within({x:x,y:y},doors[j])){
-			return
+			return;
 		} 
 	}
 	level.terrain[x][y] = terrain.init();
@@ -242,15 +242,17 @@ function sameRoom(a,b){
 }
 function connect(room1,room2,size){
 	var shared = intersection(room1,room2);
-	for(;area(shared) > size+1; shared = shorten(shared)){}
+	while(area(shared) > size+1){
+		shared = shorten(shared);
+	}
 	addUnique(room1.doors,shared,sameRoom);
 	addUnique(room2.doors,shared,sameRoom);
 	return shared;
 }
 function connectLevel(rooms,level){
 	var connected = [];
-	while(rooms.length !=0){
-		var current = randomElt(rooms)
+	while(rooms.length !==0){
+		var current = randomElt(rooms);
 		var path = [];
 		for(var i=0; i<50 && !current.accessable; i++){
 			path.push(current);

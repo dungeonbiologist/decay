@@ -6,21 +6,177 @@ function initTerrain(){
 		t.priority = 0;
 	}
 	t.draw = variableDraw;
-	if(!t.update){
-		t.update = updateTerrain; 
-	}
 	return t;
 }
-function updateTerrain(x,y,z){}//placeholder for magic sensitive terrain
+function updatePlant(x,y,z){}//placeholder for magic sensitive plants
 function variableDraw(x,y,context){
 	if(view[hudWidth+x][y] < this.priority){
 		context.drawImage(this.tile, (hudWidth + x) * tileWidth, y * tileHeight);
 		view[hudWidth+x][y] = this.priority;
 	}
 }
+
+function initPlant(){
+	var t = Object.create(this);
+	t.tile = randomElt(terrainTiles[t.tiles])
+	if(!t.priority){
+		t.priority = 1;
+	}
+	t.draw = variableDraw;
+	if(!t.update){
+		t.update = updatePlant; 
+	}
+	return t;
+}
+
+var plants;
+function initPlants(){
+	plants = {
+	thornbush: {
+		name:intern('thorn bush'),
+		walkable: false,
+		flyable: false,
+		destructable: true,
+		tiles:'thorn',
+		init: initPlant
+	},
+	tree: {
+		name:intern('a tree'),
+		walkable: true,
+		flyable: true,
+		tiles:'tree',
+		init: initPlant
+	},
+	mushroom: {
+		name:intern('mushroom'),
+		walkable: true,
+		flyable: true,
+		tiles:'mushroom',
+		init: initPlant
+	},
+	herb: {
+		name:intern('herb'),
+		walkable: true,
+		flyable: true,
+		tiles:'forb',
+		init: initPlant
+	}, 
+	grass: {
+		name:intern('grass'),
+		walkable: true,
+		flyable: true,
+		tiles:'grass',
+		init: initPlant
+	},
+	tallGrass: {
+		name:intern('tall grass'),
+		walkable: true,
+		flyable: true,
+		tiles:'tallGrass',
+		init: initPlant
+	},
+	deadGrass: {
+		name:intern('dead grass'),
+		walkable: true,
+		flyable: true,
+		tiles:'deadGrass',
+		init: initPlant
+	},
+	bush: {
+		name:intern('bush'),
+		walkable: true,
+		flyable: true,
+		opaque: true,
+		priority: 0,
+		tiles: 'bush',
+		init: initPlant
+	},
+	deadTree: {
+		name:intern('dead tree'),
+		walkable: true,
+		flyable: true,
+		priority: 0,
+		tiles: 'cane',
+		init: initPlant
+	},
+	jungle: {
+		name:intern('thick underbrush'),
+		walkable: true,
+		flyable: true,
+		priority: 0,
+		tiles: 'jungle',
+		init: initPlant
+	},
+	vegetation: {
+		name: intern('vegetation'),
+		walkable: true,
+		flyable: true,
+		magic:0,
+		tiles: ['pebbles','veg1','veg2','veg3','veg4'],
+		update:function(x,y,z){
+			if(this.magic != map[z].magic[x][y]){
+				this.tile = randomElt(terrainTiles[this.tiles[ map[z].magic[x][y] ]]);
+				this.magic = map[z].magic[x][y];
+				if(map[z].magic[x][y] <= 0){
+					map[z].terrain[x][y] = terrains.drained.init();
+					map[z].plants[x][y] = false;
+				}
+			}
+		},
+		init: function(){
+			var t = Object.create(this);
+			t.tile = randomElt(terrainTiles[t.tiles[0]])
+			if(!t.priority){
+				t.priority = 0;
+			}
+			t.draw = variableDraw;
+			return t;
+		}
+	},
+	sapling: {
+		name: intern('sapling'),
+		walkable: true,
+		flyable: true,
+		tiles: 'sapling',
+		init: function(x,y,z){
+			var t = initPlant.call(this);
+			map[z].plants[x][y]=t;
+			return t;
+		}
+	},
+	blightedGrowth: {
+		name: intern('blighted growth'),
+		walkable: true,
+		flyable: true,
+		tiles: 'blighted',
+		update:function(x,y,z){
+			if(map[z].magic[x][y] <= 0 ){
+				map[z].terrain[x][y] = terrains.drained.init();
+				map[z].plants[x][y] = false;
+			}
+		},
+		init: function(x,y,z){
+			var t = initPlant.call(this);
+			map[z].actionlist.add(map.turnNumber+Math.floor(5*Math.random()),function(){
+				map[z].terrain[x][y] = t; //delayed appearence
+				var a =[[x+1,y],[x-1,y],[x,y+1],[x,y-1]];
+				for(var i=0; i<4; i++){
+					if(map[z].legal(a[i][0],a[i][1]) && map[z].magic[a[i][0]][a[i][1]]>0 && 
+					map[z].plants[a[i][0]][a[i][1]].name!=t.name && map[z].terrain[a[i][0]][a[i][1]].walkable){
+						 plants.blightedGrowth.init(a[i][0],a[i][1],z);
+					}
+				}
+				map[z].magic[x][y] = Math.min(1,map[z].magic[x][y]);
+			});
+			return t;
+		}
+	}
+	};
+}
 var terrains;
 function initTerrains(){
 	terrains = {
+	
 	upstairs: {
 		name:intern('up stairs'),
 		walkable: true,
@@ -51,46 +207,11 @@ function initTerrains(){
 		tiles:'dirt',
 		init: initTerrain
 	},
-	guts: {
-		name:intern('guts'),
-		walkable: true,
-		flyable: true,
-		tiles:'guts',
-		init: initTerrain
-	},
-	blood: {
-		name:intern('blood'),
-		walkable: true,
-		flyable: true,
-		tiles:'blood',
-		init: initTerrain
-	},
-	mushroom: {
-		name:intern('mushroom'),
-		walkable: true,
-		flyable: true,
-		tiles:'mushroom',
-		init: initTerrain
-	},
-	herb: {
-		name:intern('herb'),
-		walkable: true,
-		flyable: true,
-		tiles:'forb',
-		init: initTerrain
-	}, 
 	poop: {
-		name:intern('jabberwock spoor'),
+		name:intern('spoor'),
 		walkable: true,
 		flyable: true,
 		tiles:'poop',
-		init: initTerrain
-	},
-	tree: {
-		name:intern('a tree'),
-		walkable: true,
-		flyable: true,
-		tiles:'tree',
 		init: initTerrain
 	},
 	rock: {
@@ -98,27 +219,6 @@ function initTerrains(){
 		walkable: true,
 		flyable: true,
 		tiles:'rock',
-		init: initTerrain
-	},
-	grass: {
-		name:intern('grass'),
-		walkable: true,
-		flyable: true,
-		tiles:'grass',
-		init: initTerrain
-	},
-	tallGrass: {
-		name:intern('tall grass'),
-		walkable: true,
-		flyable: true,
-		tiles:'tallGrass',
-		init: initTerrain
-	},
-	deadGrass: {
-		name:intern('dead grass'),
-		walkable: true,
-		flyable: true,
-		tiles:'deadGrass',
 		init: initTerrain
 	},
 	water: {
@@ -143,37 +243,12 @@ function initTerrains(){
 		tiles:'mud',
 		init: initTerrain
 	},
-	bush: {
-		name:intern('bush'),
-		walkable: true,
-		flyable: true,
-		opaque: true,
-		priority: 0,
-		tiles: 'bush',
-		init: initTerrain
-	},
-	deadTree: {
-		name:intern('dead tree'),
-		walkable: true,
-		flyable: true,
-		priority: 0,
-		tiles: 'cane',
-		init: initTerrain
-	},
 	tilefloor: {
 		name:intern('a tile floor'),
 		walkable: true,
 		flyable: true,
 		swimable: false,
 		tiles:'tilefloor',
-		init: initTerrain
-	},
-	jungle: {
-		name:intern('thick underbrush'),
-		walkable: true,
-		flyable: true,
-		priority: 0,
-		tiles: 'jungle',
 		init: initTerrain
 	},
 	wall: {
@@ -205,74 +280,12 @@ function initTerrains(){
 			return t;
 		}
 	},
-	vegetation: {
-		name: intern('vegetation'),
-		walkable: true,
-		flyable: true,
-		magic:0,
-		tiles: ['pebbles','veg1','veg2','veg3','veg4'],
-		update:function(x,y,z){
-			if(this.magic != map[z].magic[x][y]){
-				this.tile = randomElt(terrainTiles[this.tiles[ map[z].magic[x][y] ]]);
-				this.magic = map[z].magic[x][y];
-				if(map[z].magic[x][y] <= 0){
-					map[z].terrain[x][y] = terrains.drained.init();
-				}
-			}
-		},
-		init: function(){
-			var t = Object.create(this);
-			t.tile = randomElt(terrainTiles[t.tiles[0]])
-			if(!t.priority){
-				t.priority = 0;
-			}
-			t.draw = variableDraw;
-			return t;
-		}
-	},
 	drained: {
 		name: intern('lifeless ground'),
 		walkable: true,
 		flyable: true,
 		tiles: 'drained',
 		init: initTerrain
-	},
-	sapling: {
-		name: intern('sapling'),
-		walkable: true,
-		flyable: true,
-		tiles: 'sapling',
-		init: function(x,y,z){
-			var t = initTerrain.call(this);
-			map[z].terrain[x][y]=t;
-			return t;
-		}
-	},
-	blightedGrowth: {
-		name: intern('blighted growth'),
-		walkable: true,
-		flyable: true,
-		tiles: 'blighted',
-		update:function(x,y,z){
-			if(map[z].magic[x][y] <= 0 ){
-				map[z].terrain[x][y] = terrains.drained.init();
-			}
-		},
-		init: function(x,y,z){
-			var t = initTerrain.call(this);
-			map[z].actionlist.add(map.turnNumber+Math.floor(5*Math.random()),function(){
-				map[z].terrain[x][y] = t; //delayed appearence
-				var a =[[x+1,y],[x-1,y],[x,y+1],[x,y-1]];
-				for(var i=0; i<4; i++){
-					if(map[z].legal(a[i][0],a[i][1]) && map[z].magic[a[i][0]][a[i][1]]>0 && 
-					map[z].terrain[a[i][0]][a[i][1]].name!=t.name && map[z].terrain[a[i][0]][a[i][1]].walkable){
-						 terrains.blightedGrowth.init(a[i][0],a[i][1],z);
-					}
-				}
-				map[z].magic[x][y] = Math.min(1,map[z].magic[x][y]);
-			});
-			return t;
-		}
 	}
 };
 }

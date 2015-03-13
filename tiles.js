@@ -29,6 +29,11 @@ function drawCritter(tile,priority) {
 	};
 }
  var tileData = {
+ 	thorn:{
+		foreground: [red,darkRed],
+		background: [black],
+		character: [37]
+	},
 	sparkles:{
 		foreground: [magenta,darkMagenta],
 		background: [black],

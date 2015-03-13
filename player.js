@@ -294,6 +294,9 @@ function handleKeys(evt) {
 			player.state = 'choose direction';
 			message('choose a direction');
 			//player.state = 'shooting';
+		} else if(find(keys,66) && fortify.enoughMana()){ //b
+			fortify.activate(player.place);
+			move();
 		}else if(find(keys,84) && teleport.enoughMana()){ //t
 			player.spell = teleport;
 			player.state = 'shooting';
@@ -390,24 +393,6 @@ function fireSpell(e){
 		draw();
 	}
 }
-function examine(point) {
-	var z = point.z;
-	var creatures = point.mobilesAt();
-	var items = point.itemsAt().concat( point.trapsAt() );
-	var text = [];
-	text[0] = interned[ point.terrainAt().name ];
-	for (var i = 0; i < creatures.length; i++) {
-		text.push(creatures[i].explain);
-		text.push('this '+interned[creatures[i].name]+' has '+creatures[i].health+' hitpoints, '+
-			'and can hit for '+creatures[i].damage+' damage. '+
-			'It is worth '+creatures[i].xp+' experience points');
-	}
-	for (var i = 0; i < items.length; i++) {
-		text.push(items[i].explain);
-	}
-	return text;
-}
-
 function request(strng){
 	player.requested = strng;
 }

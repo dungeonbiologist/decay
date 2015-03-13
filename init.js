@@ -97,6 +97,7 @@ function init() {
 	window.addEventListener("keydown", handleKeys, false);
 	initTileData();
 	initTerrains();
+	initPlants();
 	initItems();
 	initCritters();
 	initializeBiomes();
@@ -123,7 +124,11 @@ function reInit(){
 	testLevel(map[p],p++);
 	
 	for(var i=0; i<map.length; i++){
-		map[i].terrain.forall(function(t,x,y){t.update(x,y,i)});
+		map[i].plants.forall(function(t,x,y){
+			if(t){ 
+				t.update(x,y,i) 
+			}
+		});
 	}
 	map[player.place.z].mobiles.add(player);
 	player.place.move(map[0].up.x, map[0].up.y, 0, player);

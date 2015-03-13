@@ -49,7 +49,7 @@ function drainTiles(level, tiles, amount){
 		}
 	}
 	for(var i=0; i<neighbors.length; i++){
-		level.terrain[neighbors[i][0]][neighbors[i][1]].update( neighbors[i][0], neighbors[i][1], z);
+		level.plants[neighbors[i][0]][neighbors[i][1]].update( neighbors[i][0], neighbors[i][1], z);
 	}
 	return amount;
 }
@@ -74,7 +74,7 @@ blight = {
 	mana: 0,
 	target:'none',
 	activate:function(x,y,z){
-		map[z].terrain[x][y]=terrains.blightedGrowth.init(x,y,z);
+		map[z].plants[x][y]=plants.blightedGrowth.init(x,y,z);
 	},
 	key:[]
 };
@@ -171,7 +171,6 @@ teleport = {
 		drain(ended.x,ended.y,ended.z,orgin.distance(ended)*this.cost,this.range);
 	}
 };
-
 hex = {
 	name: intern('hex'),
 	range: 1,
@@ -200,18 +199,40 @@ hex = {
 		var damage = this.damage;
 		var action = function(){
 			var drained = drain(target.place.x,target.place.y,z,self.cost,1);
-			if(target.health > 0 && damage > 0 && drained >=1){
-				message('Hex drains '+drained+' mana.',yellow);
-				var dealtDamage = target.attacked(target.place,player,1);
-				damage--;
-				message('Hex drains '+dealtDamage+' health from the '+interned[target.name]+'.',yellow);
-				map[z].actionlist.add(map.turnNumber-0.1,action);
-				animate(target.place.x,target.place.y,[[[randomElt(terrainTiles.sparkles)]]]);
+			if(target.health > 0 && damage > 0){
+				if(drained >= 1){
+					message('Hex drains '+drained+' mana.',yellow);
+					var dealtDamage = target.attacked(target.place,player,1);
+					damage--;
+					message('Hex drains '+dealtDamage+' health from the '+interned[target.name]+'.',yellow);
+					map[z].actionlist.add(map.turnNumber-0.1,action);
+					animate(target.place.x,target.place.y,[[[randomElt(terrainTiles.sparkles)]],[[randomElt(terrainTiles.sparkles)]],[[randomElt(terrainTiles.sparkles)]]]);
+				}
 			} else {
 				message('The hex fades away.',magenta);
 			}
 		};
 		map[player.place.z].actionlist.add(map.turnNumber,action);
 		drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
+	}
+};
+fortify = {
+	name: intern('fortify'),
+	range: 1,
+	level: 0,
+	mana: 1,
+	cost:1,
+	damage:10,
+	explain : '',
+	enoughMana: function(){
+		var mana = player.mana(this.range);
+		if(mana<this.mana){
+			message('you do not have enough  mana to cast '+interned[this.name]);
+			return false;
+		}
+		return true;
+	},
+	activate: function(place){
+		diamond(place.x,place.y,2,function(x,y){map[player.place.z].terrain[x][y]=terrains.thornbush.init();});
 	}
 };
