@@ -13,10 +13,11 @@ function initCritters(){
 		},
 		dryad: {
 			name:intern('dryad'),
-			maxHealth: 10,
+			maxHealth: 20,
 			speed: 1,
-			damage:10,
+			damage:3,
 			xp:10,
+			planter:true,
 			tiles: [tile(darkYellow,black,100)],
 			explain: 'Dryads plant saplings that protect the surrounding vegetation from your mana drain. Kill the dryad to remove the sapling.'
 		},
@@ -36,7 +37,8 @@ function initCritters(){
 			speed: 1.5,
 			damage:1,
 			hostile:true,
-			xp:50,
+			xp:5,
+			sleepy:true,
 			tiles: [tile(yellow,black,102)],
 			explain: 'Fairies love fresh flowers and the laughter of children.',
 			wakeup:function(silent){
@@ -44,7 +46,7 @@ function initCritters(){
 					message('with a tinkle of laughter a fairy wakes up');
 				}
 				var self = this;
-				map[this.place.z].actionlist.add(map.turnNumber,function(){self.tick()});
+				map[this.place.z].actionlist.add(map.turnNumber,function(){self.tick();});
 			}
 		}
 	};
@@ -102,8 +104,11 @@ function initCritters(){
 					this.move(); 
 				}
 			}
+			if(this.planter && this.place.manaAt() >= 2 && onein(8)){
+				this.planted.push( plants.sapling.init(this.place.x,this.place.y,this.place.z) );
+			}
 			var self=this;
-			map[this.place.z].actionlist.add(map.turnNumber,function(){self.tick()});
+			map[this.place.z].actionlist.add(map.turnNumber,function(){self.tick();});
 		},
 		hunt: function(){
 			if(this.enemy && this.enemy.health >0){
@@ -114,8 +119,7 @@ function initCritters(){
 					function(p){ return (self.unBlocked(p,self))?1:20; }, 
 					function(p){ return self.withinRange(goal,p,self); },
 					goal,
-					this.huntingRadius
-				);
+					this.huntingRadius);
 				this.path.shift();
 			}
 		},
@@ -124,6 +128,11 @@ function initCritters(){
 			message('The '+interned[this.name]+' dies',darkYellow);
 			player.levelUp(this.xp);
 			achieve.crittersKilled[this.name] = achieve.crittersKilled[this.name]+1 || 1;
+			if(this.planted){
+				for(var i=0; i< this.planted.length; i++){
+					this.planted[i].die();
+				}
+			}
 		},
 		at: function(point){
 			for(var i=0; i<this.positions.length; i++){
@@ -149,20 +158,21 @@ function initCritters(){
 			}
 		},
 		chooseMove: function(){ 
-			if(this.path.length == 0){
+			if(this.path.length === 0){
 				this.hunt();
-				if(this.path.length == 0){ 
+				if(this.path.length === 0){ 
 					var d = new Direction(Math.floor(Math.random()*11-5), Math.floor(Math.random()*11-5));
+					var goal;
 					if(this.homebody){
-						var goal = this.home.add(d);
+						goal = this.home.add(d);
 					} else if(this.herder){
 						var herders = [];
 						map[this.place.z].mobiles.forall(function(c){
-							if(c.herder){ herders.push(c) }
+							if(c.herder){ herders.push(c); }
 						});
-						var goal = randomElt(herders).place.add(d);
+						goal = randomElt(herders).place.add(d);
 					} else {
-						var goal = this.place.add(d);
+						goal = this.place.add(d);
 					}
 					var self = this;
 					this.path = astar(
@@ -170,11 +180,11 @@ function initCritters(){
 						function(p){ return (self.unBlocked(p,self))?1:20; }, 
 						function(p){ return self.withinRange(goal,p,self); },
 						goal,
-						15
-					);
+						15);
 					if(this.path.length > 0){
-						if(this.place.distance(this.path[0]) == 0)
+						if(this.place.distance(this.path[0]) === 0){
 							this.path.shift();
+						}
 					}
 				}
 			}
@@ -198,6 +208,12 @@ function initCritters(){
 			if(t.hostile){
 				t.enemy = player;
 			}
+			if(t.planter){
+				t.planted = [];
+			}
+			if(!t.sleepy){
+				map[t.place.z].actionlist.add(map.turnNumber,function(){t.tick();});
+			}
 			return t;
 		},
 		draw: function(context){
@@ -212,8 +228,9 @@ function initCritters(){
 		unBlocked: function(point,self){
 			for(var i=0; i<self.positions.length; i++){
 				var p = point.add(self.positions[i]);
-				if( !map[self.place.z].unBlocked(p,self) )
+				if( !map[self.place.z].unBlocked(p,self) ){
 					return false;
+				}
 			}
 			return true;
 		},

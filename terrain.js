@@ -138,11 +138,13 @@ function initPlants(){
 		walkable: true,
 		flyable: true,
 		tiles: 'sapling',
+		dead:false,
+		die:function(){ this.dead = true; },
 		init: function(x,y,z){
 			var t = initPlant.call(this);
 			map[z].plants[x][y]=t;
 			var tick = function(){
-				if(map[z].plants[x][y]===t){
+				if(map[z].plants[x][y]===t && !t.dead){
 					for(var i=x-2; i<x+3; i++){
 						for(var j=y-2; j<y+3; j++){
 							if(map[z].legal(i,j)){

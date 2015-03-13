@@ -133,8 +133,8 @@ fireCone = {
 			}
 		}
 		
-		//animate(orgin.x+3*direction.x-2, orgin.y+3*direction.y-2,
-		//	mapcar(animations.coneOfFire.slice(0,i+1), function(a){return rotate(angle, a);} ) );
+		animate(orgin.x+3*direction.x-2, orgin.y+3*direction.y-2,
+			mapcar(animations.coneOfFire.slice(0,i+1), function(a){return rotate(angle, a);} ) );
 	}
 };
 teleport = {

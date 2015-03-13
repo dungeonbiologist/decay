@@ -174,7 +174,10 @@ function examine(point) {
 		text[0] = text[0].concat(', '+interned[plant.name]);
 	}
 	if(point.manaAt() > 0){
-		text[0] = text[0].concat(', '+point.manaAt() +' mana');
+		text.push(''+point.manaAt() +' mana');
+	}
+	if(map[z].guarded[point.x][point.y]){
+		text.push('A glowing aura protects this tile from your mana drain.');
 	}
 	for (var i = 0; i < creatures.length; i++) {
 		text.push(creatures[i].explain);

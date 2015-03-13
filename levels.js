@@ -15,11 +15,11 @@ function testLevel(level,depth){
 				level.plants[x][y] = plants.vegetation.init(); 
 				}
 		});
-		plants.sapling.init( randomInt(0,level.width-1), randomInt(0,level.width-1), depth);
+		
 	}
 	for(var i=0; i<1; i++){
 		var room = randomElt(rooms);
-		biome.fairyRing.init(room,level,depth);
+		biome.sacredGrove.init(room,level,depth);
 	}
 	findNeighbors(rooms,4);
 	var someRooms = [];
@@ -31,7 +31,5 @@ function testLevel(level,depth){
 	for(var i=0; i<rooms.length; i++){
 		placeRoom(rooms[i], level,terrains.dirtWall);
 	}
-	//placeRing(5,5,2,level,terrains.mushroom);
 	placeStairs(level,depth,rooms);
-	//level.magic.forall(function(t,x,y){ level.magic[x][y] = Math.floor(x/13); });
 }

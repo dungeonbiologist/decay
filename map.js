@@ -203,10 +203,10 @@ function makemap(width,height) {
 			return terrains.floor.init();
 		}),
 		magic: makeArray(width, height, function() {
-			return 1;
+			return 2;
 		}),
 		plants: makeArray(width, height, function() {
-			return false;
+			return plants.vegetation.init();
 		}),
 		seen: makeArray(width, height, function() {
 			return terrainTiles.blank[0]; //set all the tiles to black to start with

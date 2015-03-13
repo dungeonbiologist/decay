@@ -28,10 +28,10 @@ function initializeBiomes(){
 				level.actionlist.add(map.turnNumber, wait);
 			}
 		},
-		gatorHole : {
+		sacredGrove : {
 			pattern: carveCave,
-			terrains: [terrains.muddyWater, 1],
-			inhabitants: [critters.aligator],
+			terrains: [terrains.mud, 1],
+			inhabitants: [critters.dryad],
 			init: initbiome
 		},
 		pardHideout: {
