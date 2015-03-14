@@ -96,13 +96,25 @@ function examineHud(coord){
 				return 'this is the mana you can drain from closest to you';
 			} else if(coord.x+hudWidth <8){
 				drawDiamond(2);
-				return 'this is the mana you can drain from slightly furthur away';
+				return 'this is the mana you can drain from an intermediate distance';
 			} else {
 				drawDiamond(3);
-				return 'this is the most distant mana availible to you';
+				return 'this is the most distant mana available to you';
 			}
 		} else if(coord.y == 3){
 			return 'you have '+player.buffedHealth()+' health out of a maximum of '+player.maxHealth+'.';
+		} else {
+			return examineSpells(coord);
+		}
+	}
+	return '';
+}
+function examineSpells(coord){
+	if(coord.x+hudWidth <10){
+		if(coord.y >=11 && coord.y < player.spells.length+11){
+			return player.spells[coord.y-11].explain;
+		} else if(coord.y == 9){
+			return 'The spells you have learned so far.';
 		}
 	}
 	return '';
@@ -116,13 +128,18 @@ function drawDiamond(r){
 		}
 	});
 }
-function showStatuses(context,place){
-	/*place++;
-	context.fillStyle = color[darkGreen];
-	context.fillRect(tileWidth, (place-1) * tileHeight, 8 * tileWidth * player.currentPoison/player.maxPoison, tileHeight);
+function showSpells(context){
+	var offset = 12;
 	context.fillStyle = color[white];
-	context.fillText('Poison: '+player.currentPoison, 2 * tileWidth, place++ * tileHeight);
-	*/
+	context.fillText('Spells:', 3 * tileWidth, 10 * tileHeight);
+	for(var i=0; i<player.spells.length; i++){
+		context.fillStyle = color[white];
+		context.fillText(player.spells[i].key, 1 * tileWidth, (offset+i) * tileHeight);
+		if(!player.spells[i].enoughMana(true)){
+			context.fillStyle = color[grey];
+		}
+		context.fillText(interned[player.spells[i].name], 2 * tileWidth, (offset+i) * tileHeight);
+	}
 }
 function manageInventory(context){
 	if(player.state == 'inventory' || player.dropping){
@@ -204,8 +221,7 @@ function examinationMessagebox(context){
 	}
 }
 function draw() {
-	if(animation.running){ 
-		runAnimation();
+	if(animation.running){
 		return; 
 	}
 	clearView();
@@ -256,7 +272,7 @@ function draw() {
 		context.drawImage(terrainTiles.highlight[0], (hudWidth + m.x) * tileWidth, m.y * tileHeight);
 		
 		var place = showHealth(context);
-		showStatuses(context,place);
+		showSpells(context);
 		manageInventory(context);
 		examinationMessagebox(context);
 		displayMessagelog(context)

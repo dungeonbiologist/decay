@@ -56,19 +56,30 @@ function drainTiles(level, tiles, amount){
 	}
 	return amount;
 }
-
+function enoughMana(silent){
+	var mana = player.mana(this.range);
+	if(mana<this.mana){
+		if(!silent){
+			message('you do not have enough  mana to cast '+interned[this.name],magenta);
+		}
+		return false;
+	}
+	return true;
+}
 fingerOfDeath = {
 	name: intern('finger of death'),
 	range: 1,
 	level: 0,
-	mana: 10,
-	efficiency:1,
+	mana: 2,
+	efficiency:2,
+	key:' ',
+	enoughMana: enoughMana,
 	target:'directional',
 	activate:function(orgin,critter,point){
 		var d = drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
 		return critter.attacked(point, player, Math.floor(d/this.efficiency), false);
 	},
-	description:'damages one adjacent target of your choosing for 20 damage. It uses 20 mana.'
+	explain: 'Finger of death drains mana from the closest distance, and damages one adjacent target of your choosing for 1 damage per 2 mana.'
 };
 blight = {
 	name: intern('blight'),
@@ -76,29 +87,25 @@ blight = {
 	level: 0,
 	mana: 0,
 	target:'none',
+	key:'b',
+	enoughMana: enoughMana,
 	activate:function(x,y,z){
 		map[z].plants[x][y]=plants.blightedGrowth.init(x,y,z);
 	},
-	key:[]
+	explain: 'Blight places an infectous blight on your tile that spreads to adjacent magical squares.  It kills saplings and limits the magic in a square to one mana.'
 };
 fireCone = {
 	name: intern('Cone of Fire'),
 	range: 3,
 	level: 0,
-	mana: 10,
+	mana: 20,
 	damage:10,
 	flier:true,
 	climber:true, //to go through bushes
 	size:3,
-	explain:'Cone of Fire costs 30 mana and does 10 damage to each enemy it hits',
-	enoughMana: function(){
-		var mana = player.mana(this.range);
-		if(mana<this.mana){
-			message('you do not have enough  mana to cast '+interned[this.name]);
-			return false;
-		}
-		return true;
-	},
+	key:'f',
+	explain:'Cone of Fire drains 20 mana from the farthest distance, and does 10 damage to each enemy it hits',
+	enoughMana: enoughMana,
 	activate : function(orgin, direction){
 		drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
 		var self = this;
@@ -150,15 +157,9 @@ teleport = {
 	cost:1,
 	flier:true,
 	size:3,
-	explain : 'Teleport moves you in a strait line until you hit an obstacle. It costs 20 mana, and uses additional mana proportional to the distance.',
-	enoughMana: function(){
-		var mana = player.mana(this.range);
-		if(mana<this.mana){
-			message('you do not have enough  mana to cast '+interned[this.name]);
-			return false;
-		}
-		return true;
-	},
+	key:'t',
+	explain : 'Teleport moves you in a strait line until you hit an obstacle. It drains 20 mana from the farthest distance, and uses additional mana proportional to the distance.',
+	enoughMana: enoughMana,
 	activate : function(orgin, target){
 		var self = this;
 		var next = orgin;
@@ -186,15 +187,9 @@ hex = {
 	mana: 10,
 	cost:1,
 	damage:10,
-	explain : '',
-	enoughMana: function(){
-		var mana = player.mana(this.range);
-		if(mana<this.mana){
-			message('you do not have enough  mana to cast '+interned[this.name]);
-			return false;
-		}
-		return true;
-	},
+	key:'h',
+	explain : 'Hex drains 10 mana from the closest distance and places a hex on an adjacent creature of your choosing that each turn drains 1 mana to deal 1 damage to that creature, up to a maximum of 10.',
+	enoughMana: enoughMana,
 	activate : function(orgin, direction){
 		var target = orgin.add(direction).mobilesAt();
 		if(target.length == 0){
@@ -226,24 +221,18 @@ hex = {
 };
 fortify = {
 	name: intern('fortify'),
-	range: 1,
+	range: 2,
 	level: 0,
-	mana: 1,
-	cost:1,
-	damage:10,
-	explain : '',
-	enoughMana: function(){
-		var mana = player.mana(this.range);
-		if(mana<this.mana){
-			message('you do not have enough  mana to cast '+interned[this.name]);
-			return false;
-		}
-		return true;
-	},
+	mana: 12,
+	key:'s',
+	explain : 'Fortify drains 12 mana from the intermediate distance and places thorn bushes randomly around you.',
+	enoughMana: enoughMana,
 	activate: function(place){
-		maze(place.x, place.y, 2, map[player.place.z], function(point){ if(!point.plantsAt() || !points.plantsAt().name == plants.sapling.name) 
-			point.setPlant(plants.thornbush.init());
-			point.setMana(0);
+		maze(place.x, place.y, 2, map[place.z], function(point){ 
+			if(!point.plantsAt() || !(point.plantsAt().name == plants.sapling.name)){ 
+				point.setPlants(plants.thornbush.init());
+				point.setMana(0);
+			}
 		});
 	}
 };

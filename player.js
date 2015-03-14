@@ -12,6 +12,7 @@ function initPlayer(){
 		maxHealth: 20,
 		strength: 2,
 		xp: 1,
+		spells:[fingerOfDeath,fortify,hex,fireCone,teleport,blight],
 		dropping:false,	
 		level: function(){
 			return Math.floor(Math.pow(this.xp,1/3));
@@ -193,10 +194,10 @@ function dropItem(){
 }
 function move(){
 	var dir = player.dirSelected;
-	var plant = player.place.add(dir).plantsAt();
 	var x = player.place.x;
 	var y = player.place.y;
 	if ( map[player.place.z].legal(x + dir.x, y + dir.y)) {
+		var plant = player.place.add(dir).plantsAt();
 		if(map[player.place.z].unBlocked(player.place.add(dir), player)){
 			player.place.move(x+dir.x, y+dir.y, player.place.z, player);
 			pickUp(player.place.itemsAt());
@@ -216,6 +217,7 @@ function move(){
 			}
 		}
 	}
+	player.dirSelected = false;
 	player.facing = dir;
 }
 function setInstructions(){
@@ -325,6 +327,7 @@ function handleKeys(evt) {
 				player.looking.x = x;
 				player.looking.y = y;
 			}
+			player.dirSelected = false;
 		} else{
 			player.looking = false;
 			player.state = 'moveing';
@@ -355,6 +358,7 @@ function handleKeys(evt) {
 		if( getDirection(keys) && player.spell){
 			player.spell.activate(player.place, player.dirSelected);
 			player.spell = false;
+			player.dirSelected = false;
 			tick();
 		}
 		player.state = 'moveing';

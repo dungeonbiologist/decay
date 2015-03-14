@@ -168,7 +168,7 @@ Point.prototype = {
 	},
 	setMana: function(amount){
 		map[this.z].magic[this.x][this.y] = amount;
-	}
+	},
 	terrainSet: function(newTerrain){
 		map[this.z].terrain[this.x][this.y] = newTerrain;
 	}
@@ -187,12 +187,15 @@ function makemap(width,height) {
 			return new Point(x,y,this.depth);
 		},
 		unBlocked: function (point, thing) {
+			if(!this.legal(point.x,point.y)){
+				return false;
+			}
 			var p = this.plants[point.x][point.y];
 			var walkable = ((!p || p.walkable) && this.terrain[point.x][point.y].walkable) ;
 			var swimable = ((!p || p.swimable) && this.terrain[point.x][point.y].swimmable && thing.swimmer);
 			var flyable = ((!p || p.flyable) && this.terrain[point.x][point.y].flyable && thing.flier);
 			var climable = (p && thing.climber);
-			if(!(  this.legal(point.x,point.y) && (walkable || swimable || flyable || climable))){ 
+			if(!(walkable || swimable || flyable || climable)){ 
 				return false; 
 			}
 			var max = 0;
