@@ -1,6 +1,7 @@
 function initPlayer(){ 
 	return {
 		wizmode: false,
+		castFromHealth:true,
 		name: intern('player'),
 		title: 'Hexxus the wizard',
 		explain: 'you are here',

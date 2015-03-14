@@ -139,6 +139,14 @@ function showSpells(context){
 			context.fillStyle = color[grey];
 		}
 		context.fillText(interned[player.spells[i].name], 2 * tileWidth, (offset+i) * tileHeight);
+		if(player.castFromHealth){
+			context.fillStyle = color[darkRed];
+			var spell = player.spells[i];
+			var diff = spell.mana - player.mana(spell.range);
+			if(diff > 0){
+				context.fillText(diff*2, 8 * tileWidth, (offset+i) * tileHeight);
+			}
+		}
 	}
 }
 function manageInventory(context){

@@ -58,7 +58,7 @@ function drainTiles(level, tiles, amount){
 }
 function enoughMana(silent){
 	var mana = player.mana(this.range);
-	if(mana<this.mana){
+	if(!player.castFromHealth && mana<this.mana){
 		if(!silent){
 			message('you do not have enough  mana to cast '+interned[this.name],magenta);
 		}
@@ -77,6 +77,10 @@ fingerOfDeath = {
 	target:'directional',
 	activate:function(orgin,critter,point){
 		var d = drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
+		if(player.castFromHealth && d<this.mana){
+			player.health -= 2*(this.mana -d);
+			message(interned[this.name]+' drained '+(2*(this.mana -d))+' health from you.',magenta);
+		}
 		return critter.attacked(point, player, Math.floor(d/this.efficiency), false);
 	},
 	explain: 'Finger of death drains mana from the closest distance, and damages one adjacent target of your choosing for 1 damage per 2 mana.'
@@ -107,7 +111,11 @@ fireCone = {
 	explain:'Cone of Fire drains 20 mana from the farthest distance, and does 10 damage to each enemy it hits',
 	enoughMana: enoughMana,
 	activate : function(orgin, direction){
-		drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
+		var d = drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
+		if(player.castFromHealth && d<this.mana){
+			player.health -= 2*(this.mana -d);
+			message(interned[this.name]+' drained '+(2*(this.mana -d))+' health from you.',magenta);
+		}
 		var self = this;
 		var left = {x:direction.y, y:-direction.x};
 		var right = {x:-direction.y, y:direction.x};
@@ -174,7 +182,11 @@ teleport = {
 			message('teleport failed', yellow);
 			return;
 		}
-		drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
+		var d = drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
+		if(player.castFromHealth && d<this.mana){
+			player.health -= 2*(this.mana -d);
+			message(interned[this.name]+' drained '+(2*(this.mana -d))+' health from you.',magenta);
+		}
 		player.dirSelected = player.place.diff(ended);
 		move();
 		drain(ended.x,ended.y,ended.z,orgin.distance(ended)*this.cost,this.range);
@@ -216,7 +228,11 @@ hex = {
 			}
 		};
 		map[player.place.z].actionlist.add(map.turnNumber,action);
-		drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
+		d = drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
+		if(player.castFromHealth && d<this.mana){
+			player.health -= 2*(this.mana -d);
+			message(interned[this.name]+' drained '+(2*(this.mana -d))+' health from you.',magenta);
+		}
 	}
 };
 fortify = {
@@ -234,5 +250,10 @@ fortify = {
 				point.setMana(0);
 			}
 		});
+		var d = drain(place.x,place.y,place.z,this.mana,this.range);
+		if(player.castFromHealth && d<this.mana){
+			player.health -= 2*(this.mana -d);
+			message(interned[this.name]+' drained '+(2*(this.mana -d))+' health from you.',magenta);
+		}
 	}
 };
