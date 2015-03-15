@@ -75,6 +75,7 @@ fingerOfDeath = {
 	enoughMana: enoughMana,
 	target:'directional',
 	activate:function(orgin,critter,point){
+		message('You cast '+interned[this.name]+'.');
 		var d = drain(orgin.x,orgin.y,orgin.z,16,this.range);
 		if(player.castFromHealth && d<this.mana){
 			player.health -= 2*(this.mana -d);
@@ -93,6 +94,7 @@ blight = {
 	key:'b',
 	enoughMana: enoughMana,
 	activate:function(x,y,z){
+		message('You cast '+interned[this.name]+'.');
 		map[z].plants[x][y]=plants.blightedGrowth.init(x,y,z);
 	},
 	explain: 'Blight places an infectous blight on your tile that spreads to adjacent magical squares.  It kills saplings and limits the magic in a square to one mana.'
@@ -110,6 +112,7 @@ fireCone = {
 	explain:'Cone of Fire drains 20 mana from the farthest distance, and does 10 damage to each enemy it hits',
 	enoughMana: enoughMana,
 	activate : function(orgin, direction){
+		message('You cast '+interned[this.name]+'.');
 		var d = drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
 		if(player.castFromHealth && d<this.mana){
 			player.health -= 2*(this.mana -d);
@@ -181,14 +184,15 @@ teleport = {
 			message('teleport failed', yellow);
 			return;
 		}
+		message('You cast '+interned[this.name]+'.');
 		var d = drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
 		if(player.castFromHealth && d<this.mana){
 			player.health -= 2*(this.mana -d);
 			message(interned[this.name]+' drained '+(2*(this.mana -d))+' health from you.',magenta);
 		}
 		player.dirSelected = player.place.diff(ended);
-		move();
 		drain(ended.x,ended.y,ended.z,orgin.distance(ended)*this.cost,this.range);
+		move();
 	}
 };
 hex = {
@@ -274,6 +278,7 @@ heal = {
 	key:'r',
 	enoughMana: enoughMana,
 	activate:function(orgin){
+		message('You cast '+interned[this.name]+'.');
 		var d = drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
 		if(player.castFromHealth && d<this.mana){
 			player.health -= 2*(this.mana -d);

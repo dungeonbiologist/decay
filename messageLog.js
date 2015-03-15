@@ -50,8 +50,8 @@ var messagebox = {
 		this.pages = 0;
 		if(messageLog[display.screenNumber]){
 			this.fill(messageLog[display.screenNumber], this.lines);
-		} else if(messageLog[display.screenNumber-1]){
-			this.fill(messageLog[display.screenNumber-1], this.lines);
+		} else if(messageLog[0] && display.screenNumber ==1){ //hack to get messages from before the game to display properly
+			this.fill(messageLog[0], this.lines);
 		}
 		
 	},

@@ -1,10 +1,53 @@
 function makegiantroom(level){
 	return {x1:0,y1:0,x2:level.width-1,y2:level.height-1, width:level.width-1, height:level.height-1, neighbors:[], doors:[]};
 }
-
+function emptyLevel(level,depth){
+	var giantRoom = makegiantroom(level);
+	var rooms = subdivide(giantRoom,16);
+	placeRoom(giantRoom,level);
+	placeStairs(level,depth,rooms);
+}
 function fairyLevel(level,depth){
 	var giantRoom = makegiantroom(level);
 	var rooms = subdivide(giantRoom,4);
+	placeRoom(giantRoom,level);
+	findNeighbors(rooms,4);
+	var someRooms = [];
+	for(var i=0; i<rooms.length; i++){
+		someRooms.push(rooms[i]);
+	}
+	shuffle(someRooms);
+	loopRooms(rooms, level,10);
+	for(var i=0; i<rooms.length; i++){
+		placeRoom(rooms[i], level,terrains.dirtWall);
+		var m = onein(8)? randomInt(1,4): 1;
+		fillRoom(rooms[i], level,depth,function(p){
+			p.setMana(m);
+			p.setPlants(plants.vegetation.init());
+		},
+		1);
+	}
+	for(var i=0; i<12; i++){
+		placeCircle(randomInt(0,level.width-1),randomInt(0,level.width-1),randomInt(10,19),level,randomInt(1,6),
+			function(x,y,a){
+				level.magic[x][y]= med(level.magic[x][y], a, 4);
+				if(a>0){
+				level.plants[x][y] = plants.vegetation.init(); 
+				}
+		});
+		
+	}
+	
+	for(var i=0; i<6; i++){
+		var room = randomElt(rooms);
+		biome.fairyRing.init(room,level,depth);
+	}
+	placeStairs(level,depth,rooms);
+}
+
+function fairyLevel2(level,depth){
+	var giantRoom = makegiantroom(level);
+	var rooms = subdivide(giantRoom,6);
 	placeRoom(giantRoom,level);
 	findNeighbors(rooms,4);
 	var someRooms = [];
@@ -67,6 +110,29 @@ function gnomeLevel(level,depth){
 		var room = randomElt(rooms);
 		var p = centerOfRoom(room,depth);
 		critters.gnome.init(p.x,p.y,level);
+	}
+	placeStairs(level,depth,rooms);
+}
+
+function dryadLevel(level,depth){
+	var giantRoom = makegiantroom(level);
+	var rooms = subdivide(giantRoom,8);
+	placeRoom(giantRoom,level);
+	findNeighbors(rooms,4);
+	var someRooms = [];
+	for(var i=0; i<rooms.length; i++){
+		someRooms.push(rooms[i]);
+	}
+	shuffle(someRooms);
+	loopRooms(rooms, level,4);
+	for(var i=0; i<rooms.length; i++){
+		if(onein(2)){
+			placeRoom(rooms[i], level,terrains.dirtWall);
+		}
+	}	
+	for(var i=0; i<6; i++){
+		var room = randomElt(rooms.slice(1,rooms.length));//exlude the first room
+		biome.sacredGrove.init(room,level,depth);
 	}
 	placeStairs(level,depth,rooms);
 }

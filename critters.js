@@ -3,7 +3,7 @@ function initCritters(){
 	var critterData = {
 		unicorn: {
 			name:intern('unicorn'),
-			maxHealth: 30,
+			maxHealth: 1,
 			speed: 1,
 			damage:3,
 			xp:30,
@@ -160,6 +160,18 @@ function initCritters(){
 		die: function(){
 			map[this.place.z].mobiles.remove(this);
 			message('The '+interned[this.name]+' dies',darkYellow);
+			if(this.drop){
+				map[this.place.z].items.add(this.drop.init(this.place.add(new Direction(0,0)))); //to get a fresh point
+			}
+			if(this.unicorn){
+				message('You are cursed to lose one health point every 20 turns',magenta);
+				player.curses.push({tick:function(turn){
+					if(turn%20==0){
+						player.health--;
+						message('The curse steals one health point.',red);
+					}
+				}});
+			}
 			player.levelUp(this.xp);
 			achieve.crittersKilled[this.name] = achieve.crittersKilled[this.name]+1 || 1;
 			if(this.planted){

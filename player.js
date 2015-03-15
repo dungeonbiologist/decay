@@ -1,6 +1,6 @@
 function initPlayer(){ 
 	return {
-		wizmode: true,
+		wizmode: false,
 		castFromHealth:false,
 		name: intern('player'),
 		title: 'Hexxus the wizard',
@@ -13,7 +13,8 @@ function initPlayer(){
 		maxHealth: 20,
 		strength: 2,
 		xp: 1,
-		spells:[fingerOfDeath,heal],
+		curses:[],
+		spells:[fingerOfDeath],
 		dropping:false,	
 		level: function(){
 			return Math.floor(Math.pow(this.xp,1/3));
@@ -116,7 +117,6 @@ function initPlayer(){
 			}
 			var spells = [
 				{level:1,spell:fingerOfDeath},
-				{level:1,spell:heal},
 				{level:2,spell:hex},
 				{level:2,spell:fortify},
 				{level:3,spell:fireCone},
@@ -249,7 +249,7 @@ function setInstructions(){
 		'',
 		'? calls up instructions',
 		'',
-		'bump to attack, does 1 damage for every 1 mana it drains from the tiles around you',
+		'bump to attack, does damage based on the mana it drains from the tiles around you',
 		'',
 		'spacebar waits a turn',
 		'',

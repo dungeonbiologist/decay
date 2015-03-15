@@ -1,13 +1,10 @@
 function win(){
-	var test = true; //false;
-	map[player.place.z].mobiles.forall(function(thing){
-		test = test && critters['fairy'].name != thing.name;
-	});/*
+	var test = false;
 	for( var i=0; i<player.inventory.length; i++){
-		if(player.inventory[i] && player.inventory[i].name && interned[player.inventory[i].name] == 'Unicorn Horn'){
+		if(player.inventory[i] && player.inventory[i].name == item.unicornHorn.name){
 			test = true;
 		}
-	}*/
+	}
 	if( test ){
 		player.popup = ['You Win!'];
 		achievements(player.popup);
@@ -15,7 +12,7 @@ function win(){
 		player.state = 'gameover';
 		return true;
 	} else {
-		message('you can\'t leave yet. There are faries still living.');//You didn\'t get what you came for');
+		message('you can\'t leave yet. You didn\'t get what you came for');
 	}
 	return false;
 }
@@ -71,6 +68,9 @@ function tick(){
 			acend()
 		}
 	}
+	for(var i=0; i < player.curses.length; i++){
+		player.curses[i].tick(map.turnNumber-1);
+	}
 	level = map[p.z];
 	level.guarded.forall(function(t,x,y){level.guarded[x][y]=false;});
 	level.actionlist.tick(map.turnNumber-1);
@@ -116,7 +116,7 @@ function reInit(){
 			view[i][j] = -1;
 		}
 	}
-	map = [makemap(60,30)];//,makemap(60,30),makemap(60,30),makemap(60,30),makemap(60,30),makemap(60,30),makemap(60,30)];
+	map = [makemap(60,30),makemap(60,30),makemap(60,30),makemap(60,30),makemap(60,30)];
 	for(var i=0; i<map.length; i++){
 		map[i].depth = i;
 	}
@@ -124,8 +124,12 @@ function reInit(){
 	var p = 0;
 	player = initPlayer();
 	
-	finalLevel(map[p],p++);
 	
+	fairyLevel(map[p],p++);
+	fairyLevel2(map[p],p++);
+	gnomeLevel(map[p],p++);
+	dryadLevel(map[p],p++);
+	finalLevel(map[p],p++);
 	for(var i=0; i<map.length; i++){
 		map[i].plants.forall(function(t,x,y){
 			if(t){ 
@@ -136,9 +140,9 @@ function reInit(){
 	map[player.place.z].mobiles.add(player);
 	player.place.move(map[0].up.x, map[0].up.y, 0, player);
 	player.state = 'goal';
-	player.popup = ['your goal is to kill all the faries'];/*decend to the bottom of the dugeon,',
+	player.popup = ['your goal is to decend to the bottom of the dugeon,',
 		'get the horn of the vicious unicorn,', 
-		'and exit the top level of the dugeon with it'];*/
+		'and exit the top level of the dugeon with it'];
 	message('Welcome',green);
 	message('Use the mouse to look!!!',red);
 	achieve = {crittersKilled:[], deepestLevel:1, killedBy:undefined};
