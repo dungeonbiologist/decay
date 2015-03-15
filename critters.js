@@ -3,7 +3,7 @@ function initCritters(){
 	var critterData = {
 		unicorn: {
 			name:intern('unicorn'),
-			maxHealth: 1,
+			maxHealth: 20,
 			speed: 1,
 			damage:3,
 			xp:30,
