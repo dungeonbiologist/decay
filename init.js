@@ -124,7 +124,7 @@ function reInit(){
 	var p = 0;
 	player = initPlayer();
 	
-	testLevel(map[p],p++);
+	finalLevel(map[p],p++);
 	
 	for(var i=0; i<map.length; i++){
 		map[i].plants.forall(function(t,x,y){

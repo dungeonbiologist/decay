@@ -166,6 +166,9 @@ Point.prototype = {
 		}
 		return 0;
 	},
+	magicAt: function(){
+		return map[this.z].magic[this.x][this.y];
+	},
 	setMana: function(amount){
 		map[this.z].magic[this.x][this.y] = amount;
 	},
@@ -194,7 +197,7 @@ function makemap(width,height) {
 			var walkable = ((!p || p.walkable) && this.terrain[point.x][point.y].walkable) ;
 			var swimable = ((!p || p.swimable) && this.terrain[point.x][point.y].swimmable && thing.swimmer);
 			var flyable = ((!p || p.flyable) && this.terrain[point.x][point.y].flyable && thing.flier);
-			var climable = (p && thing.climber);
+			var climable = ((!p || p.climable) && this.terrain[point.x][point.y].walkable && thing.climber);
 			if(!(walkable || swimable || flyable || climable)){ 
 				return false; 
 			}
@@ -215,10 +218,10 @@ function makemap(width,height) {
 			return terrains.floor.init();
 		}),
 		magic: makeArray(width, height, function() {
-			return 2;
+			return 0;
 		}),
 		plants: makeArray(width, height, function() {
-			return plants.vegetation.init();
+			return false;
 		}),
 		seen: makeArray(width, height, function() {
 			return terrainTiles.blank[0]; //set all the tiles to black to start with

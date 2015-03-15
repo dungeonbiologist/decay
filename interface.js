@@ -112,6 +112,10 @@ function examineHud(coord){
 function examineSpells(coord){
 	if(coord.x+hudWidth <10){
 		if(coord.y >=11 && coord.y < player.spells.length+11){
+			var diff = player.spells[coord.y-11].mana - player.mana(player.spells[coord.y-11].range);
+			if(coord.x + hudWidth >=8 && player.castFromHealth && diff > 0){
+				return 'You do not have enough mana for this spell, but you can still cast it for the cost of '+(2*diff)+' health,';
+			}
 			return player.spells[coord.y-11].explain;
 		} else if(coord.y == 9){
 			return 'The spells you have learned so far.';

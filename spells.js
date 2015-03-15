@@ -1,9 +1,9 @@
 function diamond(x,y,range,fn){
-	var tiles = [/*[[x,y]],*/
+	var tiles = [[[x,y]],
 		[[x-1,y],[x+1,y],[x,y-1],[x,y+1]],
 		[[x-1,y-1],[x+1,y+1],[x+1,y-1],[x-1,y+1]],
 		[[x-2,y],[x+2,y],[x,y-2],[x,y+2]]];
-	for(var i=0; i<range; i++){
+	for(var i=0; i<=range; i++){
 		for(var j=0; j<tiles[i].length; j++){
 			fn(tiles[i][j][0],tiles[i][j][1]);
 		}
@@ -69,26 +69,25 @@ function enoughMana(silent){
 fingerOfDeath = {
 	name: intern('finger of death'),
 	range: 1,
-	level: 0,
 	mana: 2,
 	efficiency:2,
 	key:' ',
 	enoughMana: enoughMana,
 	target:'directional',
 	activate:function(orgin,critter,point){
-		var d = drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
+		var d = drain(orgin.x,orgin.y,orgin.z,16,this.range);
 		if(player.castFromHealth && d<this.mana){
 			player.health -= 2*(this.mana -d);
 			message(interned[this.name]+' drained '+(2*(this.mana -d))+' health from you.',magenta);
+			d = this.mana;
 		}
 		return critter.attacked(point, player, Math.floor(d/this.efficiency), false);
 	},
-	explain: 'Finger of death drains mana from the closest distance, and damages one adjacent target of your choosing for 1 damage per 2 mana.'
+	explain: 'Finger of death drains mana from the closest distance, and damages one target for 1 damage per 2 mana.  It is cast by attempting to move onto a tile with a creature on it.'
 };
 blight = {
 	name: intern('blight'),
 	range: 0,
-	level: 0,
 	mana: 0,
 	target:'none',
 	key:'b',
@@ -161,12 +160,12 @@ teleport = {
 	name: intern('teleport'),
 	range: 3,
 	level: 0,
-	mana: 10,
+	mana: 15,
 	cost:1,
 	flier:true,
 	size:3,
 	key:'t',
-	explain : 'Teleport moves you in a strait line until you hit an obstacle. It drains 20 mana from the farthest distance, and uses additional mana proportional to the distance.',
+	explain : 'Teleport moves you in a strait line until you hit an obstacle. It drains 15 mana from the farthest distance, and uses additional mana proportional to the distance.',
 	enoughMana: enoughMana,
 	activate : function(orgin, target){
 		var self = this;
@@ -196,11 +195,11 @@ hex = {
 	name: intern('hex'),
 	range: 1,
 	level: 0,
-	mana: 10,
+	mana: 6,
 	cost:1,
 	damage:10,
 	key:'h',
-	explain : 'Hex drains 10 mana from the closest distance and places a hex on an adjacent creature of your choosing that each turn drains 1 mana to deal 1 damage to that creature, up to a maximum of 10.',
+	explain : 'Hex drains 6 mana from the closest distance and places a hex on an adjacent creature of your choosing that each turn drains 1 mana to deal 1 damage to that creature, up to a maximum of 10.',
 	enoughMana: enoughMana,
 	activate : function(orgin, direction){
 		var target = orgin.add(direction).mobilesAt();
@@ -239,21 +238,52 @@ fortify = {
 	name: intern('fortify'),
 	range: 2,
 	level: 0,
-	mana: 12,
+	mana: 10,
 	key:'s',
-	explain : 'Fortify drains 12 mana from the intermediate distance and places thorn bushes randomly around you.',
+	explain : 'Fortify drains 10 mana from the intermediate distance and places thorn bushes randomly around you.',
 	enoughMana: enoughMana,
 	activate: function(place){
+		var d = drain(place.x,place.y,place.z,this.mana,this.range);
+		if(player.castFromHealth && d<this.mana){
+			player.health -= 2*(this.mana -d);
+			message(interned[this.name]+' drained '+(2*(this.mana -d))+' health from you.',magenta);
+		}
 		maze(place.x, place.y, 2, map[place.z], function(point){ 
 			if(!point.plantsAt() || !(point.plantsAt().name == plants.sapling.name)){ 
 				point.setPlants(plants.thornbush.init());
 				point.setMana(0);
 			}
 		});
-		var d = drain(place.x,place.y,place.z,this.mana,this.range);
+	}
+};
+vampirism = {
+	name: intern('vampirism'),
+	range: 0,
+	mana: 0,
+	key:' ',
+	enoughMana: enoughMana,
+	activate:function(){},
+	explain: 'Vampirism is an ability that lets you cast spells using your health instead of mana.'
+
+};
+heal = {
+	name: intern('heal'),
+	range: 1,
+	mana: 20,
+	target:'none',
+	key:'r',
+	enoughMana: enoughMana,
+	activate:function(orgin){
+		var d = drain(orgin.x,orgin.y,orgin.z,this.mana,this.range);
 		if(player.castFromHealth && d<this.mana){
 			player.health -= 2*(this.mana -d);
 			message(interned[this.name]+' drained '+(2*(this.mana -d))+' health from you.',magenta);
+			d = this.mana;
 		}
-	}
+		var healed = Math.min(Math.floor(d/4),player.maxHealth - player.health);
+		player.health += healed;
+		message('You healed yourself by '+healed+' health point',green);
+	},
+	explain: 'Heal allows you to drain 20 mana from the closest distance and recover up to five health points.'
+
 };

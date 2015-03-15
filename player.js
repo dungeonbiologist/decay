@@ -1,7 +1,7 @@
 function initPlayer(){ 
 	return {
-		wizmode: false,
-		castFromHealth:true,
+		wizmode: true,
+		castFromHealth:false,
 		name: intern('player'),
 		title: 'Hexxus the wizard',
 		explain: 'you are here',
@@ -13,7 +13,7 @@ function initPlayer(){
 		maxHealth: 20,
 		strength: 2,
 		xp: 1,
-		spells:[fingerOfDeath,fortify,hex,fireCone,teleport,blight],
+		spells:[fingerOfDeath,heal],
 		dropping:false,	
 		level: function(){
 			return Math.floor(Math.pow(this.xp,1/3));
@@ -109,14 +109,36 @@ function initPlayer(){
 			message('you gain '+xp+' experience.',green);
 			var level = this.level();
 			this.xp +=xp;
-			for(var i=0; i< this.level()-level; i++){
-				var gain = this.level()-level;
+			var gain = this.level()-level;
+			if(gain > 0){
 				message('You gained '+gain+' level'+((gain == 1)? '.': 's.'),green);
 				message('You are now level '+this.level()+'!',cyan);
+			}
+			var spells = [
+				{level:1,spell:fingerOfDeath},
+				{level:1,spell:heal},
+				{level:2,spell:hex},
+				{level:2,spell:fortify},
+				{level:3,spell:fireCone},
+				{level:4,spell:teleport},
+				{level:4,spell:blight},
+				{level:5,spell:vampirism},
+				{level:6,spell:heal}
+			];
+			for(var i=level+1; i<= this.level(); i++){
 				this.maxHealth +=5;
 				this.health = this.maxHealth;
 				this.strength++;
 				this.defense+=5;
+				for(var j=0; j<spells.length; j++){
+					if(spells[j].level== i){
+						player.spells.push(spells[j].spell);
+						message('You learn '+interned[spells[j].spell.name],green);
+						if(spells[j].name == vampirism.name){
+							player.castFromHealth = true;
+						}
+					}
+				}
 			}
 		}
 	};
@@ -229,19 +251,7 @@ function setInstructions(){
 		'',
 		'bump to attack, does 1 damage for every 1 mana it drains from the tiles around you',
 		'',
-		'f casts a cone of fire that drains 10 mana from the surrounding 13 tiles and does 10 damage',
-		'',
-		't casts teleport. Teleport moves you in a strait line until you hit an obstacle. It costs 20 mana, and uses additional mana proportional to the distance',
-		'',
-		'd drains the life out of surrounding vegetation',
-		'',
-		'b blights the vegetation',
-		'',
 		'spacebar waits a turn',
-		'',
-		'i brings up your inventory',
-		'',
-		'a-z select that item from the inventory',
 		'',
 		'the arrow keys move you around the map',
 		'',
@@ -290,30 +300,32 @@ function handleKeys(evt) {
 			player.state = 'inventory';
 		} else if(find(keys,68) || find(keys,190)){ //d
 			//player.dropping = true;
-			drain( player.place.x, player.place.y, player.place.z, 12, 3 );
-		} else if(find(keys,70) && fireCone.enoughMana()){ //f
+		} else if(find(keys,70) && find(player.spells, fireCone) && fireCone.enoughMana()){ //f
 			player.spell = fireCone;
 			player.state = 'choose direction';
 			message('choose a direction');
 			//player.state = 'shooting';
-		} else if(find(keys,72) && hex.enoughMana()){ //h
+		} else if(find(keys,72) && find(player.spells, hex) && hex.enoughMana()){ //h
 			player.spell = hex;
 			player.state = 'choose direction';
 			message('choose a direction');
 			//player.state = 'shooting';
-		} else if(find(keys,83) && fortify.enoughMana()){ //s
+		} else if(find(keys,83) && find(player.spells, fortify) && fortify.enoughMana()){ //s
 			fortify.activate(player.place);
 			move();
-		}else if(find(keys,84) && teleport.enoughMana()){ //t
+		} else if(find(keys,84) && find(player.spells, teleport) && teleport.enoughMana()){ //t
 			player.spell = teleport;
 			player.state = 'shooting';
+		} else if(find(keys,82) && find(player.spells, heal) && player.health < player.maxHealth){ //r
+			heal.activate(player.place);
+			tick();
 		} else if(find(keys,77)){
 			player.state = 'messagelog';
 		} else if(getDirection(keys)) { //sets dirSelected
 			move();
 		} else if( find(keys,32)){
 			tick();
-		} else if( find(keys,66)){ //b
+		} else if( find(keys,66) && find(player.spells, blight) && blight.enoughMana()){ //b
 			blight.activate(player.place.x, player.place.y, player.place.z);
 		}
 	}

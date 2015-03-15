@@ -37,6 +37,7 @@ function initPlants(){
 		walkable: false,
 		flyable: false,
 		destructable: true,
+		climable:true,
 		tiles:'thorn',
 		init: initPlant
 	},
@@ -45,6 +46,7 @@ function initPlants(){
 		walkable: false,
 		flyable: false,
 		destructable: true,
+		climable:true,
 		tiles:'toadstool',
 		init: initPlant
 	},

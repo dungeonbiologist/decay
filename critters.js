@@ -3,13 +3,14 @@ function initCritters(){
 	var critterData = {
 		unicorn: {
 			name:intern('unicorn'),
-			maxHealth: 10,
+			maxHealth: 30,
 			speed: 1,
-			damage:10,
-			xp:100,
+			damage:3,
+			xp:30,
+			unicorn:true,
 			drop: item.unicornHorn,
 			tiles: [tile(white,black,151)],
-			explain: 'The vicious unicorn is a merciless beast.  They gain powers by sacrificing innocent vigin wizards to their vile deities.'
+			explain: 'The vicious unicorn is a merciless beast.  They gain powers by sacrificing innocent vigin wizards to their vile deities. Any single attack is no matter how powerful does only 1 damage.'
 		},
 		dryad: {
 			name:intern('dryad'),
@@ -26,10 +27,23 @@ function initCritters(){
 			maxHealth: 10,
 			speed: 1,
 			flutters:true,
-			damage:10,
+			damage:2,
+			attackRange:1.5,
+			hostile:true,
 			xp:10,
 			tiles: [tile(cyan,black,112)],
-			explain: 'pixie'
+			explain: 'pixies can attack diagonally'
+		},
+		gnome: {
+			name:intern('gnome'),
+			maxHealth: 20,
+			speed: 1,
+			damage:5,
+			climber:true,
+			xp:10,
+			toadstoolplanter:true,
+			tiles: [tile(blue,black,103)],
+			explain: 'a gnome no more than 3 apples high.  It has a habit of planting toadstools where ever it goes.'
 		},
 		fairy: {
 			name:intern('fairy'),
@@ -37,7 +51,7 @@ function initCritters(){
 			speed: 1.5,
 			damage:1,
 			hostile:true,
-			xp:5,
+			xp:7,
 			sleepy:true,
 			tiles: [tile(yellow,black,102)],
 			explain: 'Fairies love fresh flowers and the laughter of children.',
@@ -68,6 +82,9 @@ function initCritters(){
 			}
 		},
 		attacked: function(point, thing, damage) {
+			if(this.unicorn){
+				damage = Math.min(1,damage);
+			}
 			this.health -= damage;
 			this.enrage(thing);
 			if(thing && this.stampedes){
@@ -106,6 +123,23 @@ function initCritters(){
 			}
 			if(this.planter && this.place.manaAt() >= 2 && onein(8)){
 				this.planted.push( plants.sapling.init(this.place.x,this.place.y,this.place.z) );
+			}
+			if(this.toadstoolplanter && this.place.unBlocked(this) && onein(8)){
+				var neighbors = this.place.neighbors();
+				var touching = 0;
+				for(var i=0; i<neighbors.length; i++){
+					if(!neighbors[i].unBlocked({size:3})){
+						touching++;
+					}
+				}
+				if(touching<=2){
+					this.place.setPlants(plants.toadstool.init());
+				}
+			}
+			if(this.unicorn && this.place.magicAt() == 0 && this.place.terrainAt().name == terrains.drained.name){
+				this.place.setMana(4);
+				critters.fairy.init(this.place.x,this.place.y,map[this.place.z],true);
+				message('The unicorn sheds a single tear on the despoiled land, bringing it back to life');
 			}
 			var self=this;
 			map[this.place.z].actionlist.add(map.turnNumber,function(){self.tick();});
@@ -192,7 +226,7 @@ function initCritters(){
 		attack: function(critter){
 			critter.attacked(critter.place,this,this.damage);
 		},
-		init: function(x,y,level){
+		init: function(x,y,level,awake){
 			var t = Object.create(this);
 			t.place = level.newPoint(x, y);
 			t.home = level.newPoint(x, y);
@@ -211,7 +245,7 @@ function initCritters(){
 			if(t.planter){
 				t.planted = [];
 			}
-			if(!t.sleepy){
+			if(!t.sleepy || awake){
 				map[t.place.z].actionlist.add(map.turnNumber,function(){t.tick();});
 			}
 			return t;
@@ -235,7 +269,7 @@ function initCritters(){
 			return true;
 		},
 		withinRange: function(point1,point2,self){
-		return point1.distance(point2) <=1;
+		return point1.distance(point2) <= (this.attackRange || 1);
 		}
 	};
 	for(var animal in critterData){
@@ -245,3 +279,5 @@ function initCritters(){
 		}
 	}
 }
+
+var gnomenames = ['Papa Gnome', 'Actor Gnome', 'Timid Gnome', 'Dreamy Gnome', 'Baby Gnome', 'Baker Gnome', 'Barber Gnome', 'Blacksmith Gnome', 'Brainy Gnome', 'Carpenter Gnome', 'Chef Gnome', 'Clueless Gnome', 'Clumsy Gnome', 'Cobbler Gnome', 'Crazy Gnome', 'Dabbler Gnome', 'Farmer Gnome', 'Fisher Gnome', 'Flighty Gnome', 'Grandpa Gnome', 'Greedy Gnome', 'Sweety Gnome', 'Grouchy Gnome', 'Gutsy Gnome', 'Handy Gnome', 'Hefty Gnome', 'Hunter Gnome', 'Jokey Gnome', 'Brainy Gnome', 'Lazy Gnome', 'Liar Gnome', 'Lucky Gnome', 'Nanny Gnome', 'Nosey Gnome', 'Painter Gnome', 'Panicky Gnome', 'Poet Gnome', 'Postman Gnome', 'Potter Gnome', 'Pushover Gnome', 'Reporter Gnome', 'Scaredy Gnome', 'Sculptor Gnome', 'Showoff Gnome', 'Sickly Gnome', 'Chilly, Gnome', 'Sloppy Gnome', 'Stinky, Gnome', 'Smelly Gnome', 'Slouchy Gnome', 'Snappy Gnome', 'Social Gnome', 'Suspicious Gnome', 'Tailor Gnome', 'Timber Gnome', 'Tracker Gnome', 'Traveling Gnome', 'Vanity Gnome', 'Weepy Gnome', 'Doc Gnome', 'Happy Gnome', 'Sneezy Gnome', 'Bashful Gnome', 'Dopey Gnome', 'Sleepy Gnome', 'Grumpy Gnome'];

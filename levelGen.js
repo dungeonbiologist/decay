@@ -233,11 +233,12 @@ function overwriteRoom(room,level,terrain){
 		}
 	}
 }
-function fillRoom(room,level,depth,terrain,frequency){
+function fillRoom(room,level,depth,fn,frequency){
 	for(var i=room.x1; i<=room.x2; i++){
 		for(var j=room.y1; j<=room.y2; j++){
-			if(Math.random()<frequency && level.terrain[i][j].walkable){
-				level.terrain[i][j] = terrain.init();
+			var p = level.newPoint(i,j);
+			if(Math.random()<frequency && p.unBlocked({size:3})){
+				fn(p);
 			}
 		}
 	}
